@@ -1,0 +1,56 @@
+{
+  "trace_id": "baseline-001",
+  "version": "1.0.0",
+  "created_at": "2024-01-01T00:00:00Z",
+  "execution_state": "FINALIZED",
+  "input": {
+    "model": "gpt-4o",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello, world!"
+      }
+    ],
+    "params": {
+      "temperature": 0.7,
+      "max_tokens": 100
+    }
+  },
+  "constraints_applied": {
+    "budget_limit_usd": 1.0,
+    "budget_strategy": "hard_stop",
+    "privacy_level": "raw"
+  },
+  "output": {
+    "response": "Hello! I'm here to help you. What can I assist you with today?",
+    "truncated": false,
+    "finish_reason": "stop"
+  },
+  "observations": {
+    "tokens_count": 15,
+    "cost_estimated_usd": 0.0003,
+    "latency_ms": 100,
+    "state_transitions": [
+      {
+        "from": "INIT",
+        "to": "CONSTRAINT_EVAL",
+        "timestamp": "2024-01-01T00:00:00Z"
+      },
+      {
+        "from": "CONSTRAINT_EVAL",
+        "to": "EXECUTING",
+        "timestamp": "2024-01-01T00:00:00Z"
+      },
+      {
+        "from": "EXECUTING",
+        "to": "VALIDATION",
+        "timestamp": "2024-01-01T00:00:00Z"
+      },
+      {
+        "from": "VALIDATION",
+        "to": "FINALIZED",
+        "timestamp": "2024-01-01T00:00:00Z"
+      }
+    ]
+  }
+}

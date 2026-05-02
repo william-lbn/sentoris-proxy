@@ -1,0 +1,17 @@
+FROM golang:1.24.0
+
+WORKDIR /app
+
+# 设置代理
+RUN go env -w GOPROXY=https://goproxy.cn,direct
+
+# 复制源代码
+COPY . .
+
+# 运行go mod tidy
+RUN go mod tidy
+
+# 编译项目
+RUN go build -o /app/sentoris-proxy ./cmd/sentoris-proxy
+
+CMD ["go", "test", "./internal/transport/http", "-v", "-count=1"]

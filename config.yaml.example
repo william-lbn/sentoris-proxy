@@ -1,0 +1,159 @@
+# Sentoris Proxy 配置文件示例
+#
+# 支持三种存储模式:
+# 1. sqlite (默认/推荐用于本地安装) - 使用SQLite数据库，无需外部依赖
+# 2. postgres_redis - 使用PostgreSQL + Redis，适合生产环境
+# 3. memory - 仅使用内存存储，数据不会持久化
+#
+# 启动参数可以覆盖配置:
+#   -storage sqlite    使用SQLite存储模式
+#   -storage postgres_redis  使用PostgreSQL+Redis存储模式
+#   -storage memory    使用内存存储模式
+#
+# 示例:
+#   ./sentoris-proxy -storage sqlite                    # 使用SQLite模式
+#   ./sentoris-proxy -storage postgres_redis -config config.production.yaml  # 使用生产配置
+
+# 端口配置
+port: 8080
+
+# 存储模式配置
+# 可选值: sqlite, postgres_redis, memory
+storage_mode: sqlite
+
+# SQLite配置 (当storage_mode为sqlite时使用)
+sqlite:
+  database_path: "./data/sentoris.db"
+
+# 文件缓存配置 (可选，用于替代Redis缓存)
+file_cache:
+  enabled: false
+  cache_path: "./data/cache/"
+  max_size_mb: 100
+
+# 上游模型提供商配置
+upstreams:
+  mock-llm:
+    display_name: "Mock LLM"
+    api_type: "openai"
+    api_base: "http://localhost:8081/v1"
+    api_key: "mock-key"
+    default_headers:
+      x_mock_mode: "standard"
+    models:
+      - name: "mock"
+        display_name: "Mock Model"
+        input_price: 0.0
+        output_price: 0.0
+        context_window: 128000
+        supports_function_calling: true
+        supports_vision: true
+        supports_streaming: true
+
+  openai:
+    display_name: "OpenAI"
+    api_type: "openai"
+    api_base: "https://api.openai.com/v1"
+    api_key: "${OPENAI_API_KEY}"
+    default_headers:
+      x_organization_id: ""
+    models:
+      - name: "gpt-4o"
+        display_name: "GPT-4o"
+        input_price: 5.0
+        output_price: 15.0
+        context_window: 128000
+        supports_function_calling: true
+        supports_vision: true
+        supports_streaming: true
+      - name: "gpt-4o-mini"
+        display_name: "GPT-4o Mini"
+        input_price: 0.15
+        output_price: 0.6
+        context_window: 128000
+        supports_function_calling: true
+        supports_vision: true
+        supports_streaming: true
+
+  deepseek:
+    display_name: "DeepSeek"
+    api_type: "openai"
+    api_base: "https://api.deepseek.com/v1"
+    api_key: "${DEEPSEEK_API_KEY}"
+    models:
+      - name: "deepseek-chat"
+        display_name: "DeepSeek Chat"
+        input_price: 0.27
+        output_price: 1.1
+        context_window: 64000
+        supports_function_calling: true
+        supports_streaming: true
+
+  qwen:
+    display_name: "Qwen"
+    api_type: "openai"
+    api_base: "https://dashscope.aliyuncs.com/api/v1"
+    api_key: "${QWEN_API_KEY}"
+    default_headers:
+      x_wireless_api_key: "${QWEN_API_KEY}"
+    models:
+      - name: "qwen-plus"
+        display_name: "Qwen Plus"
+        input_price: 0.8
+        output_price: 2.4
+        context_window: 32000
+        supports_function_calling: true
+        supports_streaming: true
+
+# 默认提供商
+default_provider: "mock-llm"
+
+# 预算配置
+budget:
+  buffer_ratio: 0.1
+  strategy: "rollback"  # 可选: rollback, commit
+  degrade_map:
+    "gpt-4o": "gpt-4o-mini"
+
+# JWT配置
+jwt:
+  secret: "your-secret-key-change-in-production"
+  api_keys:
+    - "test-token"
+
+# Redis配置 (当storage_mode为postgres_redis时使用)
+redis:
+  addr: "localhost:6379"
+  password: ""
+  db: 0
+  mode: "single"  # 可选: single, sentinel, cluster
+
+# PostgreSQL配置 (当storage_mode为postgres_redis时使用)
+postgresql:
+  dsn: "postgres://postgres:postgres@localhost:5432/sentoris?sslmode=disable"
+
+# Hooks配置
+hooks:
+  enabled:
+    - name: "noop"
+      priority: 0
+    - name: "pii-detector"
+      priority: 10
+    - name: "rate-limiter"
+      priority: 20
+  strategy: "short-circuit"  # 可选: short-circuit, all-execute
+
+# 扩展配置
+extensions:
+  registered: []
+  unknown_strategy: "warn"  # 可选: ignore, warn, reject
+
+# 可观测性配置
+observability:
+  opentelemetry:
+    enabled: false
+    endpoint: "localhost:4317"
+  prometheus:
+    enabled: true
+    path: "/metrics"
+  log_level: "info"  # 可选: debug, info, warn, error

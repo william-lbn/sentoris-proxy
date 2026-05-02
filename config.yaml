@@ -1,0 +1,86 @@
+port: 8080
+
+# 存储模式选择:
+# - postgres_redis: 使用PostgreSQL + Redis（完整功能）
+# - sqlite: 使用SQLite嵌入式数据库（轻量单机部署）
+# - memory: 使用内存存储（开发测试，数据不持久化）
+# 留空或不设置则使用默认行为（尝试PostgreSQL+Redis，失败降级到内存）
+storage_mode: ""
+
+default_provider: "mock"
+
+upstreams:
+  mock:
+    base_url: "http://localhost:8081/v1"
+    auth_header: "Bearer mock-key"
+    models:
+      - "gpt-4o"
+      - "gpt-4o-mini"
+      - "deepseek-chat"
+      - "qwen-turbo"
+    pricing:
+      input_per_1k: 0.005
+      output_per_1k: 0.015
+
+  openai:
+    base_url: "https://api.openai.com/v1"
+    auth_header: "Bearer ${OPENAI_API_KEY}"
+    models:
+      - "gpt-4o"
+      - "gpt-4o-mini"
+      - "gpt-3.5-turbo"
+    pricing:
+      input_per_1k: 0.005
+      output_per_1k: 0.015
+
+redis:
+  addr: "localhost:6379"
+  password: ""
+  db: 0
+
+postgresql:
+  dsn: "postgres://postgres:postgres@localhost:5432/sentoris?sslmode=disable"
+
+# SQLite配置（当storage_mode=sqlite时使用）
+sqlite:
+  database_path: "./data/sentoris.db"
+
+# 文件缓存配置（替代Redis用于预算存储）
+file_cache:
+  enabled: false
+  cache_path: "./data/cache/"
+  max_size_mb: 100
+
+jwt:
+  secret: "sentoris-secret-key-change-in-production"
+  api_keys:
+    - "sk-test-1234567890abcdef"
+
+observability:
+  opentelemetry:
+    enabled: false
+    endpoint: ""
+  prometheus:
+    enabled: true
+    path: "/metrics"
+  log_level: "info"
+
+budget:
+  buffer_ratio: 0.1
+  strategy: "hard_stop"
+  degrade_map:
+    "gpt-4o": "gpt-4o-mini"
+    "qwen-max": "qwen-turbo"
+
+hooks:
+  strategy: "short-circuit"
+  enabled:
+    - name: "noop"
+      priority: 100
+    - name: "pii-detector"
+      priority: 50
+    - name: "rate-limiter"
+      priority: 10
+
+extensions:
+  registered: []

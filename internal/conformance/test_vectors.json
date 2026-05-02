@@ -1,0 +1,212 @@
+{
+  "version": "1.0.0",
+  "description": "Sentoris Protocol Conformance Test Vectors",
+  "categories": [
+    "basic",
+    "streaming",
+    "budget",
+    "privacy",
+    "risk"
+  ],
+  "tests": [
+    {
+      "id": "test-001",
+      "category": "basic",
+      "level": "required",
+      "description": "Basic chat completion with valid input",
+      "action": {
+        "type": "chat_completion",
+        "method": "POST",
+        "path": "/v1/chat/completions",
+        "headers": {
+          "Content-Type": "application/json",
+          "Sentoris-Version": "1.0.0"
+        },
+        "body": {
+          "model": "gpt-4o",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Hello, world!"
+            }
+          ],
+          "stream": false
+        }
+      },
+      "expected": {
+        "valid": true,
+        "response_contains": "content"
+      }
+    },
+    {
+      "id": "test-002",
+      "category": "basic",
+      "level": "required",
+      "description": "Missing required field: model",
+      "action": {
+        "type": "chat_completion",
+        "method": "POST",
+        "path": "/v1/chat/completions",
+        "headers": {
+          "Content-Type": "application/json",
+          "Sentoris-Version": "1.0.0"
+        },
+        "body": {
+          "messages": [
+            {
+              "role": "user",
+              "content": "Hello"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "valid": false,
+        "error_keyword": "model"
+      }
+    },
+    {
+      "id": "test-003",
+      "category": "basic",
+      "level": "required",
+      "description": "Invalid Sentoris version",
+      "action": {
+        "type": "chat_completion",
+        "method": "POST",
+        "path": "/v1/chat/completions",
+        "headers": {
+          "Content-Type": "application/json",
+          "Sentoris-Version": "999.0.0"
+        },
+        "body": {
+          "model": "gpt-4o",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Hello"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "valid": false,
+        "error_keyword": "version"
+      }
+    },
+    {
+      "id": "test-004",
+      "category": "streaming",
+      "level": "required",
+      "description": "Streaming chat completion",
+      "action": {
+        "type": "chat_completion",
+        "method": "POST",
+        "path": "/v1/chat/completions",
+        "headers": {
+          "Content-Type": "application/json",
+          "Sentoris-Version": "1.0.0"
+        },
+        "body": {
+          "model": "gpt-4o",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Tell me a short story"
+            }
+          ],
+          "stream": true
+        }
+      },
+      "expected": {
+        "valid": true,
+        "response_contains": "data:"
+      }
+    },
+    {
+      "id": "test-005",
+      "category": "budget",
+      "level": "required",
+      "description": "Budget constraint with hard_stop strategy",
+      "action": {
+        "type": "chat_completion",
+        "method": "POST",
+        "path": "/v1/chat/completions",
+        "headers": {
+          "Content-Type": "application/json",
+          "Sentoris-Version": "1.0.0"
+        },
+        "body": {
+          "model": "gpt-4o",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Hello"
+            }
+          ],
+          "sentoris_constraints": {
+            "budget_limit_usd": 0.0001,
+            "budget_strategy": "hard_stop"
+          }
+        }
+      },
+      "expected": {
+        "valid": true,
+        "response_contains": "content"
+      }
+    },
+    {
+      "id": "test-006",
+      "category": "privacy",
+      "level": "required",
+      "description": "Privacy level masked",
+      "action": {
+        "type": "chat_completion",
+        "method": "POST",
+        "path": "/v1/chat/completions",
+        "headers": {
+          "Content-Type": "application/json",
+          "Sentoris-Version": "1.0.0"
+        },
+        "body": {
+          "model": "gpt-4o",
+          "messages": [
+            {
+              "role": "user",
+              "content": "My email is test@example.com"
+            }
+          ],
+          "sentoris_constraints": {
+            "privacy_level": "masked"
+          }
+        }
+      },
+      "expected": {
+        "valid": true,
+        "response_contains": "content"
+      }
+    },
+    {
+      "id": "test-007",
+      "category": "risk",
+      "level": "required",
+      "description": "Risk assessment with baseline comparison",
+      "action": {
+        "type": "risk_assessment",
+        "method": "POST",
+        "path": "/v1/risk/assess",
+        "headers": {
+          "Content-Type": "application/json",
+          "Sentoris-Version": "1.0.0"
+        },
+        "body": {
+          "baseline_trace_id": "baseline-001",
+          "candidate_trace_id": "candidate-001"
+        }
+      },
+      "expected": {
+        "valid": true,
+        "response_contains": "risk"
+      }
+    }
+  ]
+}

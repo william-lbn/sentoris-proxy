@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7.4-alpine
+    container_name: sentoris-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis-data:/data
+    restart: always
+    user: "0"
+    networks:
+      - sentoris-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: sentoris-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sentoris
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    restart: always
+    user: "0"
+    networks:
+      - sentoris-network
+
+  llm-mock:
+    build:
+      context: ../sentoris-llm-mock
+      dockerfile: Dockerfile
+    container_name: sentoris-llm-mock
+    ports:
+      - "8081:8080"
+    environment:
+      - PORT=8080
+    restart: always
+    networks:
+      - sentoris-network
+
+  sentoris-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sentoris-proxy
+    ports:
+      - "8080:8080"
+    environment:
+      - REDIS_ADDR=redis:6379
+      - POSTGRES_DSN=postgres://postgres:postgres@postgres:5432/sentoris?sslmode=disable
+      - JWT_SECRET=your-secret-key
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - QWEN_API_KEY=${QWEN_API_KEY}
+    depends_on:
+      - redis
+      - postgres
+      - llm-mock
+    restart: always
+    networks:
+      - sentoris-network
+
+networks:
+  sentoris-network:
+    driver: bridge

@@ -1,0 +1,124 @@
+# Sentoris Proxy 生产环境配置文件
+#
+# 使用 PostgreSQL + Redis 存储模式
+# 适合生产环境部署，支持高可用和水平扩展
+
+# 端口配置
+port: 8080
+
+# 存储模式: postgres_redis
+storage_mode: postgres_redis
+
+# 上游模型提供商配置
+upstreams:
+  openai:
+    display_name: "OpenAI"
+    api_type: "openai"
+    api_base: "https://api.openai.com/v1"
+    api_key: "${OPENAI_API_KEY}"
+    default_headers:
+      x_organization_id: ""
+    models:
+      - name: "gpt-4o"
+        display_name: "GPT-4o"
+        input_price: 5.0
+        output_price: 15.0
+        context_window: 128000
+        supports_function_calling: true
+        supports_vision: true
+        supports_streaming: true
+      - name: "gpt-4o-mini"
+        display_name: "GPT-4o Mini"
+        input_price: 0.15
+        output_price: 0.6
+        context_window: 128000
+        supports_function_calling: true
+        supports_vision: true
+        supports_streaming: true
+
+  deepseek:
+    display_name: "DeepSeek"
+    api_type: "openai"
+    api_base: "https://api.deepseek.com/v1"
+    api_key: "${DEEPSEEK_API_KEY}"
+    models:
+      - name: "deepseek-chat"
+        display_name: "DeepSeek Chat"
+        input_price: 0.27
+        output_price: 1.1
+        context_window: 64000
+        supports_function_calling: true
+        supports_streaming: true
+
+  qwen:
+    display_name: "Qwen"
+    api_type: "openai"
+    api_base: "https://dashscope.aliyuncs.com/api/v1"
+    api_key: "${QWEN_API_KEY}"
+    default_headers:
+      x_wireless_api_key: "${QWEN_API_KEY}"
+    models:
+      - name: "qwen-plus"
+        display_name: "Qwen Plus"
+        input_price: 0.8
+        output_price: 2.4
+        context_window: 32000
+        supports_function_calling: true
+        supports_streaming: true
+
+# 默认提供商
+default_provider: "openai"
+
+# 预算配置
+budget:
+  buffer_ratio: 0.1
+  strategy: "rollback"
+  degrade_map:
+    "gpt-4o": "gpt-4o-mini"
+
+# JWT配置
+jwt:
+  secret: "${JWT_SECRET}"
+  api_keys: []
+
+# Redis配置
+redis:
+  addr: "${REDIS_ADDR}"
+  password: "${REDIS_PASSWORD}"
+  db: 0
+  mode: "sentinel"
+  master: "mymaster"
+  nodes:
+    - "redis-node-1:26379"
+    - "redis-node-2:26379"
+    - "redis-node-3:26379"
+
+# PostgreSQL配置
+postgresql:
+  dsn: "${POSTGRES_DSN}"
+
+# Hooks配置
+hooks:
+  enabled:
+    - name: "noop"
+      priority: 0
+    - name: "pii-detector"
+      priority: 10
+    - name: "rate-limiter"
+      priority: 20
+  strategy: "short-circuit"
+
+# 扩展配置
+extensions:
+  registered: []
+  unknown_strategy: "warn"
+
+# 可观测性配置
+observability:
+  opentelemetry:
+    enabled: true
+    endpoint: "${OTEL_ENDPOINT}"
+  prometheus:
+    enabled: true
+    path: "/metrics"
+  log_level: "info"
