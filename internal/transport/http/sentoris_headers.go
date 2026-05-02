@@ -9,29 +9,29 @@ import (
 )
 
 type SentorisHeaders struct {
-	Version            string
-	Capabilities       []string
+	Version              string
+	Capabilities         []string
 	AcceptedCapabilities []string
-	Action            string
-	BaselineRef       string
-	BudgetLimit       float64
-	BudgetStrategy    domain.BudgetStrategy
-	PrivacyLevel      domain.PrivacyLevel
-	DiffOutput        bool
-	FocusFields       []string
-	OverrideModel     string
-	Seed              *int64
-	Repeatability     bool
-	RepeatabilityID  string
+	Action               string
+	BaselineRef          string
+	BudgetLimit          float64
+	BudgetStrategy       domain.BudgetStrategy
+	PrivacyLevel         domain.PrivacyLevel
+	DiffOutput           bool
+	FocusFields          []string
+	OverrideModel        string
+	Seed                 *int64
+	Repeatability        bool
+	RepeatabilityID      string
 }
 
 func ParseSentorisHeaders(r *http.Request) *SentorisHeaders {
 	h := &SentorisHeaders{
-		Version: r.Header.Get("Sentoris-Version"),
-		Capabilities: parseCapabilities(r.Header.Get("Sentoris-Capabilities")),
-		Action: r.Header.Get("Sentoris-Action"),
-		BaselineRef: r.Header.Get("Sentoris-Baseline-Ref"),
-		DiffOutput: r.Header.Get("Sentoris-Diff-Output") == "true",
+		Version:       r.Header.Get("Sentoris-Version"),
+		Capabilities:  parseCapabilities(r.Header.Get("Sentoris-Capabilities")),
+		Action:        r.Header.Get("Sentoris-Action"),
+		BaselineRef:   r.Header.Get("Sentoris-Baseline-Ref"),
+		DiffOutput:    r.Header.Get("Sentoris-Diff-Output") == "true",
 		OverrideModel: r.Header.Get("Sentoris-Override-Model"),
 	}
 

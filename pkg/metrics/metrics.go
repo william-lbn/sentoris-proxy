@@ -10,17 +10,17 @@ import (
 
 // MetricsCollector 收集Sentoris专属指标
 type MetricsCollector struct {
-	budgetCutoffTotal      prometheus.Counter
-	diffRiskLevel          *prometheus.CounterVec
+	budgetCutoffTotal       prometheus.Counter
+	diffRiskLevel           *prometheus.CounterVec
 	constraintEvalDuration  prometheus.Histogram
 	stateTransitionDuration *prometheus.HistogramVec
-	traceCount             *prometheus.CounterVec
-	traceDuration          prometheus.Histogram
+	traceCount              *prometheus.CounterVec
+	traceDuration           prometheus.Histogram
 	providerRequestTotal    *prometheus.CounterVec
 	providerRequestDuration *prometheus.HistogramVec
 	providerErrorTotal      *prometheus.CounterVec
-	degradeActionTotal     *prometheus.CounterVec
-	privacyLevelCount      *prometheus.CounterVec
+	degradeActionTotal      *prometheus.CounterVec
+	privacyLevelCount       *prometheus.CounterVec
 }
 
 var (

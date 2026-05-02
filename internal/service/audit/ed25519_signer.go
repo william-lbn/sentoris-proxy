@@ -95,10 +95,10 @@ func VerifyEd25519Signature(publicKeyBase64 string, data any, signatureBase64 st
 }
 
 type Ed25519Proof struct {
-	ProofType      string `json:"proof_type"`
-	PublicKey      string `json:"public_key"`
-	Signature      string `json:"signature"`
-	CanonicalData  string `json:"canonical_data,omitempty"`
+	ProofType     string `json:"proof_type"`
+	PublicKey     string `json:"public_key"`
+	Signature     string `json:"signature"`
+	CanonicalData string `json:"canonical_data,omitempty"`
 }
 
 func (p *Ed25519Proof) ToMap() (map[string]interface{}, error) {

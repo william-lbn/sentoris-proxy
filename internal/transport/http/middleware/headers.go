@@ -14,10 +14,10 @@ import (
 type contextKey string
 
 const (
-	TraceIDKey           contextKey = "sentoris_trace_id"
-	ConstraintsKey       contextKey = "sentoris_constraints"
-	SentorisVersionKey   contextKey = "sentoris_version"
-	CapabilitiesKey      contextKey = "sentoris_capabilities"
+	TraceIDKey              contextKey = "sentoris_trace_id"
+	ConstraintsKey          contextKey = "sentoris_constraints"
+	SentorisVersionKey      contextKey = "sentoris_version"
+	CapabilitiesKey         contextKey = "sentoris_capabilities"
 	AcceptedCapabilitiesKey contextKey = "sentoris_accepted_capabilities"
 )
 
@@ -35,13 +35,13 @@ func ParseCapability(capability string) (*SentorisCapability, error) {
 	pattern := `^sentoris\.ai/v([0-9]+)/([a-z0-9_-]+)$`
 	re := regexp.MustCompile(pattern)
 	matches := re.FindStringSubmatch(capability)
-	
+
 	if len(matches) != 3 {
 		return nil, fmt.Errorf("invalid capability format: %s", capability)
 	}
-	
+
 	major, _ := strconv.Atoi(matches[1])
-	
+
 	return &SentorisCapability{
 		Namespace: "sentoris.ai",
 		Major:     major,
@@ -127,12 +127,12 @@ func ParseSentorisHeaders(req *http.Request) *SentorisHeaders {
 func NegotiateCapabilities(requested []*SentorisCapability, supported []string) ([]string, string) {
 	accepted := make([]string, 0)
 	var warning string
-	
+
 	supportedMap := make(map[string]bool)
 	for _, cap := range supported {
 		supportedMap[cap] = true
 	}
-	
+
 	for _, reqCap := range requested {
 		if supportedMap[reqCap.Raw] {
 			accepted = append(accepted, reqCap.Raw)
@@ -152,7 +152,7 @@ func NegotiateCapabilities(requested []*SentorisCapability, supported []string) 
 			}
 		}
 	}
-	
+
 	return accepted, warning
 }
 
@@ -160,8 +160,8 @@ func (h *SentorisHeaders) ToConstraints() *domain.Constraints {
 	constraints := &domain.Constraints{}
 
 	constraints.Budget = &domain.BudgetConstraint{
-		LimitUSD:  h.BudgetLimit,
-		Strategy:  h.BudgetStrategy,
+		LimitUSD: h.BudgetLimit,
+		Strategy: h.BudgetStrategy,
 	}
 
 	constraints.Privacy = &domain.PrivacyConstraint{
@@ -210,14 +210,14 @@ func GetSentorisVersionFromContext(ctx context.Context) string {
 }
 
 type ResponseHeaders struct {
-	SentorisVersion     string
-	SentorisAccepted    string
-	SentorisTraceID     string
-	SentorisDiffReport  string
-	SentorisCostConsumed float64
+	SentorisVersion         string
+	SentorisAccepted        string
+	SentorisTraceID         string
+	SentorisDiffReport      string
+	SentorisCostConsumed    float64
 	SentorisBudgetRemaining *float64
-	SentorisWarning     string
-	SentorisTruncated   bool
+	SentorisWarning         string
+	SentorisTruncated       bool
 }
 
 func (h *ResponseHeaders) Apply(resp *http.Response) {

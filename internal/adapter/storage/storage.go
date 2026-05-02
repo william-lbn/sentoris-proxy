@@ -145,12 +145,12 @@ func (s *MemoryTraceStore) GetStats(ctx context.Context) (map[string]interface{}
 	stats := map[string]interface{}{
 		"total": len(s.traces),
 		"by_state": map[string]int64{
-			"INIT":             0,
-			"CONSTRAINT_EVAL":  0,
-			"EXECUTING":        0,
-			"VALIDATION":       0,
-			"FINALIZED":        0,
-			"FAILED":           0,
+			"INIT":            0,
+			"CONSTRAINT_EVAL": 0,
+			"EXECUTING":       0,
+			"VALIDATION":      0,
+			"FINALIZED":       0,
+			"FAILED":          0,
 		},
 	}
 
@@ -175,7 +175,7 @@ func NewMemoryBudgetStore() *MemoryBudgetStore {
 	return &MemoryBudgetStore{
 		budget:   100.0,
 		reserved: 0,
-		used:    0,
+		used:     0,
 	}
 }
 
@@ -301,16 +301,16 @@ type APIKeyStore interface {
 }
 
 type APIKey struct {
-	KeyID        string    `json:"key_id"`
-	Name         string    `json:"name"`
-	Description  string    `json:"description,omitempty"`
-	CreatedAt    time.Time `json:"created_at"`
-	ExpiresAt    *int64    `json:"expires_at,omitempty"`
-	IsActive     bool      `json:"is_active"`
-	KeyHash      string    `json:"-"`
-	KeyPrefix    string    `json:"key_prefix,omitempty"`
-	Permissions  []string  `json:"permissions,omitempty"`
-	LastUsedAt   *int64    `json:"last_used_at,omitempty"`
+	KeyID       string    `json:"key_id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description,omitempty"`
+	CreatedAt   time.Time `json:"created_at"`
+	ExpiresAt   *int64    `json:"expires_at,omitempty"`
+	IsActive    bool      `json:"is_active"`
+	KeyHash     string    `json:"-"`
+	KeyPrefix   string    `json:"key_prefix,omitempty"`
+	Permissions []string  `json:"permissions,omitempty"`
+	LastUsedAt  *int64    `json:"last_used_at,omitempty"`
 }
 
 type MemoryAPIKeyStore struct {
@@ -330,15 +330,15 @@ func (s *MemoryAPIKeyStore) Create(ctx context.Context, keyHash, keyPrefix, name
 
 	keyID := fmt.Sprintf("key_%d", time.Now().UnixNano())
 	key := &APIKey{
-		KeyID:        keyID,
-		KeyHash:      keyHash,
-		KeyPrefix:    keyPrefix,
-		Name:         name,
-		Description:  description,
-		CreatedAt:    time.Now(),
-		ExpiresAt:    expiresAt,
-		IsActive:     true,
-		Permissions:  permissions,
+		KeyID:       keyID,
+		KeyHash:     keyHash,
+		KeyPrefix:   keyPrefix,
+		Name:        name,
+		Description: description,
+		CreatedAt:   time.Now(),
+		ExpiresAt:   expiresAt,
+		IsActive:    true,
+		Permissions: permissions,
 	}
 	s.keys[keyID] = key
 	return key, nil
@@ -396,5 +396,5 @@ func mustUnmarshal(data string, v interface{}) {
 	if data == "" {
 		return
 	}
-	json.Unmarshal([]byte(data), v)
+	_ = json.Unmarshal([]byte(data), v)
 }

@@ -63,7 +63,7 @@ func TestConstraintEvaluator_Evaluate_PrivacyConstraint(t *testing.T) {
 	eval := NewConstraintEvaluator(nil)
 	constraints := &domain.Constraints{
 		Privacy: &domain.PrivacyConstraint{
-			Level: domain.PrivacyMasked,
+			Level:        domain.PrivacyMasked,
 			MaskedFields: []string{"email", "phone"},
 		},
 	}
@@ -172,7 +172,7 @@ func TestConstraintEvaluator_ApplyPrivacyMasking_Raw(t *testing.T) {
 func TestConstraintEvaluator_ApplyPrivacyMasking_Masked(t *testing.T) {
 	eval := NewConstraintEvaluator(nil)
 	constraints := &domain.ConstraintsApplied{
-		PrivacyLevel: domain.PrivacyMasked,
+		PrivacyLevel:        domain.PrivacyMasked,
 		PrivacyMaskedFields: []string{"email"},
 	}
 

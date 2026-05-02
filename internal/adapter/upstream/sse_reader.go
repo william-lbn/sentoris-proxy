@@ -74,8 +74,8 @@ func (r *SSEReader) processEvent(eventType, data string) (StreamEvent, error) {
 		Created int64  `json:"created"`
 		Model   string `json:"model"`
 		Choices []struct {
-			Index        int `json:"index"`
-			Delta        struct {
+			Index int `json:"index"`
+			Delta struct {
 				Role    string `json:"role,omitempty"`
 				Content string `json:"content,omitempty"`
 			} `json:"delta"`

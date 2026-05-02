@@ -22,19 +22,19 @@ type ProviderConfig struct {
 
 // ModelRouter 用于根据模型名称路由到对应的上游客户端
 type ModelRouter struct {
-	providers        map[string]*ProviderConfig
-	clients          map[string]upstream.LLMClient
-	defaultProvider  string
-	degradeMap       map[string]string // 模型降级映射
-	providerStore    storage.ProviderStore
+	providers       map[string]*ProviderConfig
+	clients         map[string]upstream.LLMClient
+	defaultProvider string
+	degradeMap      map[string]string // 模型降级映射
+	providerStore   storage.ProviderStore
 }
 
 // NewModelRouter 创建一个新的模型路由器
 func NewModelRouter() *ModelRouter {
 	return &ModelRouter{
-		providers:   make(map[string]*ProviderConfig),
-		clients:     make(map[string]upstream.LLMClient),
-		degradeMap:  make(map[string]string),
+		providers:  make(map[string]*ProviderConfig),
+		clients:    make(map[string]upstream.LLMClient),
+		degradeMap: make(map[string]string),
 	}
 }
 
@@ -69,7 +69,7 @@ func (r *ModelRouter) LoadFromStore(ctx context.Context) error {
 		config.Pricing.OutputPer1K = provider.OutputPricePer1K
 
 		r.providers[provider.Name] = config
-		
+
 		// 创建对应的客户端
 		realClient := upstream.NewRealUpstreamClient(provider.Name, provider.BaseURL, provider.AuthHeader, "")
 		r.clients[provider.Name] = upstream.NewFaultTolerantUpstreamClient(realClient)
@@ -101,7 +101,7 @@ func (r *ModelRouter) AddProvider(name string, config *ProviderConfig) {
 			IsDefault:        name == r.defaultProvider,
 		}
 		ctx := context.Background()
-		r.providerStore.Save(ctx, providerConfig)
+		_ = r.providerStore.Save(ctx, providerConfig)
 	}
 }
 
@@ -118,14 +118,14 @@ func (r *ModelRouter) SetDefaultProvider(name string) {
 			provider, err := r.providerStore.GetByName(ctx, oldDefault)
 			if err == nil {
 				provider.IsDefault = false
-				r.providerStore.Save(ctx, provider)
+				_ = r.providerStore.Save(ctx, provider)
 			}
 		}
 		// 设置新的默认标记
 		provider, err := r.providerStore.GetByName(ctx, name)
 		if err == nil {
 			provider.IsDefault = true
-			r.providerStore.Save(ctx, provider)
+			_ = r.providerStore.Save(ctx, provider)
 		}
 	}
 }
@@ -240,7 +240,7 @@ func (r *ModelRouter) RemoveProvider(name string) error {
 	// 如果有持久化存储，从数据库删除
 	if r.providerStore != nil {
 		ctx := context.Background()
-		r.providerStore.Delete(ctx, name)
+		_ = r.providerStore.Delete(ctx, name)
 	}
 
 	return nil

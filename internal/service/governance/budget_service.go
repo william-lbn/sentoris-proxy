@@ -120,31 +120,31 @@ func NewPrivacyService() *PrivacyService {
 	service := &PrivacyService{
 		piiPatterns: make(map[string]*regexp.Regexp),
 	}
-	
+
 	// 初始化 PII 检测模式
 	service.piiPatterns["email"] = regexp.MustCompile(`[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}`)
 	service.piiPatterns["phone"] = regexp.MustCompile(`(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}`)
 	service.piiPatterns["ssn"] = regexp.MustCompile(`\b\d{3}-\d{2}-\d{4}\b`)
 	service.piiPatterns["credit_card"] = regexp.MustCompile(`\b(?:\d[ -]*?){13,16}\b`)
 	service.piiPatterns["ip_address"] = regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`)
-	
+
 	return service
 }
 
 type MaskingResult struct {
 	OriginalContent  any
-	MaskedContent   any
-	MaskedFields    []string
+	MaskedContent    any
+	MaskedFields     []string
 	AlgorithmVersion string
 }
 
 type MaskingStrategy string
 
 const (
-	MaskingStrategyRegex                  MaskingStrategy = "regex"
-	MaskingStrategyPresidio              MaskingStrategy = "presidio"
-	MaskingStrategySynthetic             MaskingStrategy = "synthetic"
-	MaskingStrategyConstrainedDecoding    MaskingStrategy = "constrained_decoding"
+	MaskingStrategyRegex               MaskingStrategy = "regex"
+	MaskingStrategyPresidio            MaskingStrategy = "presidio"
+	MaskingStrategySynthetic           MaskingStrategy = "synthetic"
+	MaskingStrategyConstrainedDecoding MaskingStrategy = "constrained_decoding"
 )
 
 func (s *PrivacyService) ApplyMasking(ctx context.Context, level domain.PrivacyLevel, content any, fields []string) (*MaskingResult, error) {
@@ -249,7 +249,7 @@ func (s *PrivacyService) maskFieldByPath(data *any, path string) {
 	// 简化的路径处理，支持 $.field, field, array[*].field
 	path = strings.TrimPrefix(path, "$.")
 	parts := strings.Split(path, ".")
-	
+
 	s.traverseAndMask(data, parts, 0)
 }
 
@@ -261,7 +261,7 @@ func (s *PrivacyService) traverseAndMask(data *any, parts []string, index int) {
 	}
 
 	part := parts[index]
-	
+
 	switch v := (*data).(type) {
 	case map[string]any:
 		// 处理通配符

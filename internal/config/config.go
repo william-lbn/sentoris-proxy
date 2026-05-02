@@ -15,46 +15,46 @@ import (
 
 // Config 表示应用程序的配置
 type Config struct {
-	Port           int                           `yaml:"port"`
-	StorageMode    string                        `yaml:"storage_mode"` // "postgres_redis", "sqlite", "memory"
-	Upstreams      map[string]*router.ProviderConfig `yaml:"upstreams"`
-	DefaultProvider string                       `yaml:"default_provider"`
-	Budget         struct {
-		BufferRatio      float64            `yaml:"buffer_ratio"`      // 预算缓冲比例
-		Strategy        string             `yaml:"strategy"`          // 默认预算策略
-		DegradeMap      map[string]string   `yaml:"degrade_map"`       // 模型降级映射
+	Port            int                               `yaml:"port"`
+	StorageMode     string                            `yaml:"storage_mode"` // "postgres_redis", "sqlite", "memory"
+	Upstreams       map[string]*router.ProviderConfig `yaml:"upstreams"`
+	DefaultProvider string                            `yaml:"default_provider"`
+	Budget          struct {
+		BufferRatio float64           `yaml:"buffer_ratio"` // 预算缓冲比例
+		Strategy    string            `yaml:"strategy"`     // 默认预算策略
+		DegradeMap  map[string]string `yaml:"degrade_map"`  // 模型降级映射
 	} `yaml:"budget"`
-	Redis          struct {
-		Addr     string `yaml:"addr"`
-		Password string `yaml:"password"`
-		DB       int    `yaml:"db"`
-		Mode     string `yaml:"mode"` // "single", "sentinel", "cluster"
-		Master   string `yaml:"master"` // 用于Sentinel模式
-		Nodes    []string `yaml:"nodes"` // 用于Cluster模式
+	Redis struct {
+		Addr     string   `yaml:"addr"`
+		Password string   `yaml:"password"`
+		DB       int      `yaml:"db"`
+		Mode     string   `yaml:"mode"`   // "single", "sentinel", "cluster"
+		Master   string   `yaml:"master"` // 用于Sentinel模式
+		Nodes    []string `yaml:"nodes"`  // 用于Cluster模式
 	} `yaml:"redis"`
-	PostgreSQL     struct {
+	PostgreSQL struct {
 		DSN string `yaml:"dsn"`
 	} `yaml:"postgresql"`
-	SQLite         struct {
+	SQLite struct {
 		DatabasePath string `yaml:"database_path"`
 	} `yaml:"sqlite"`
-	FileCache      struct {
-		Enabled     bool   `yaml:"enabled"`
-		CachePath   string `yaml:"cache_path"`
-		MaxSizeMB   int    `yaml:"max_size_mb"`
+	FileCache struct {
+		Enabled   bool   `yaml:"enabled"`
+		CachePath string `yaml:"cache_path"`
+		MaxSizeMB int    `yaml:"max_size_mb"`
 	} `yaml:"file_cache"`
-	JWT            struct {
+	JWT struct {
 		Secret  string   `yaml:"secret"`
 		APIKeys []string `yaml:"api_keys"`
 	} `yaml:"jwt"`
-	Hooks          struct {
+	Hooks struct {
 		Enabled []struct {
 			Name     string `yaml:"name"`
 			Priority int    `yaml:"priority"`
 		} `yaml:"enabled"`
 		Strategy string `yaml:"strategy"` // "short-circuit" 或 "all-execute"
 	} `yaml:"hooks"`
-	Extensions     struct {
+	Extensions struct {
 		Registered []struct {
 			Namespace    string `yaml:"namespace"`
 			Version      string `yaml:"version"`
@@ -62,9 +62,9 @@ type Config struct {
 		} `yaml:"registered"`
 		UnknownStrategy string `yaml:"unknown_strategy"` // "ignore", "warn", "reject"
 	} `yaml:"extensions"`
-	Observability  struct {
+	Observability struct {
 		OpenTelemetry struct {
-			Enabled bool   `yaml:"enabled"`
+			Enabled  bool   `yaml:"enabled"`
 			Endpoint string `yaml:"endpoint"`
 		} `yaml:"opentelemetry"`
 		Prometheus struct {
@@ -77,9 +77,9 @@ type Config struct {
 
 // ConfigManager 管理配置的加载和热更新
 type ConfigManager struct {
-	config     *Config
-	path       string
-	mu         sync.RWMutex
+	config      *Config
+	path        string
+	mu          sync.RWMutex
 	lastModTime time.Time
 }
 

@@ -36,12 +36,12 @@ func TestProductionEnvironment(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to connect to PostgreSQL: %v", err)
 	}
-	
+
 	apiKeyStore, err := storage.NewPostgresAPIKeyStore(postgresDSN)
 	if err != nil {
 		t.Fatalf("Failed to connect to PostgreSQL for API keys: %v", err)
 	}
-	
+
 	riskReportStore := storage.NewMemoryRiskReportStore()
 
 	// 初始化其他依赖
@@ -71,7 +71,7 @@ func TestProductionEnvironment(t *testing.T) {
 	// 测试场景1: 基本聊天完成并验证数据库存储
 	t.Run("BasicChatCompletionWithDatabase", func(t *testing.T) {
 		sessionID := fmt.Sprintf("test-session-%d", time.Now().UnixNano())
-		
+
 		reqBody := map[string]interface{}{
 			"model": "gpt-4o",
 			"messages": []map[string]string{
@@ -152,11 +152,11 @@ func TestProductionEnvironment(t *testing.T) {
 	// 测试场景2: 不同模型的路由和响应
 	t.Run("ModelRoutingWithMultipleProviders", func(t *testing.T) {
 		models := []string{"gpt-4o", "deepseek-chat", "qwen-turbo"}
-		
+
 		for _, model := range models {
 			t.Run(fmt.Sprintf("Model-%s", model), func(t *testing.T) {
 				sessionID := fmt.Sprintf("test-session-%s-%d", model, time.Now().UnixNano())
-				
+
 				reqBody := map[string]interface{}{
 					"model": model,
 					"messages": []map[string]string{
@@ -212,14 +212,14 @@ func TestProductionEnvironment(t *testing.T) {
 	// 测试场景3: 流式响应
 	t.Run("StreamingResponseWithDatabase", func(t *testing.T) {
 		sessionID := fmt.Sprintf("test-session-streaming-%d", time.Now().UnixNano())
-		
+
 		reqBody := map[string]interface{}{
 			"model": "gpt-4o",
 			"messages": []map[string]string{
 				{"role": "user", "content": "Tell me a short story about AI"},
 			},
 			"max_tokens": 100,
-			"stream": true,
+			"stream":     true,
 		}
 
 		reqJSON, err := json.Marshal(reqBody)
@@ -365,12 +365,12 @@ func TestHealthCheckWithRealStorage(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to connect to PostgreSQL: %v", err)
 	}
-	
+
 	apiKeyStore, err := storage.NewPostgresAPIKeyStore(postgresDSN)
 	if err != nil {
 		t.Fatalf("Failed to connect to PostgreSQL for API keys: %v", err)
 	}
-	
+
 	riskReportStore := storage.NewMemoryRiskReportStore()
 
 	// 初始化其他依赖

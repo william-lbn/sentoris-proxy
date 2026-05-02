@@ -9,7 +9,7 @@ import (
 // BenchmarkSign benchmarks signature generation performance
 func BenchmarkSign(b *testing.B) {
 	signer := NewSigner()
-	
+
 	trace := &domain.Trace{
 		TraceID:        "test-trace-id-12345",
 		Model:          "gpt-4o",
@@ -23,7 +23,7 @@ func BenchmarkSign(b *testing.B) {
 			FinishReason: domain.FinishReasonStop,
 		},
 		Observations: domain.Observations{
-			TokensCount:       1050,
+			TokensCount:      1050,
 			CostEstimatedUSD: 0.0025,
 		},
 	}
@@ -42,7 +42,7 @@ func BenchmarkEd25519Sign(b *testing.B) {
 	for i := range privateKey {
 		privateKey[i] = byte(i)
 	}
-	
+
 	edSigner, err := NewEd25519Signer(privateKey)
 	if err != nil {
 		b.Fatal(err)

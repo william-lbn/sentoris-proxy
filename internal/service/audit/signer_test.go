@@ -11,12 +11,12 @@ func TestSigner_Sign(t *testing.T) {
 	signer := NewSigner()
 
 	trace := &domain.Trace{
-		TraceID:     "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-		Model:       "openai/gpt-4o",
-		CreatedAt:   time.Date(2026, 4, 20, 10, 0, 0, 0, time.UTC),
+		TraceID:        "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+		Model:          "openai/gpt-4o",
+		CreatedAt:      time.Date(2026, 4, 20, 10, 0, 0, 0, time.UTC),
 		ExecutionState: domain.StateFinalized,
 		Proofs: domain.Proofs{
-			ProofType:             "hash_chain",
+			ProofType:              "hash_chain",
 			CanonicalizationMethod: "rfc8785",
 		},
 	}
@@ -40,12 +40,12 @@ func TestSigner_Verify(t *testing.T) {
 	signer := NewSigner()
 
 	trace := &domain.Trace{
-		TraceID:     "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-		Model:       "openai/gpt-4o",
-		CreatedAt:   time.Date(2026, 4, 20, 10, 0, 0, 0, time.UTC),
+		TraceID:        "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+		Model:          "openai/gpt-4o",
+		CreatedAt:      time.Date(2026, 4, 20, 10, 0, 0, 0, time.UTC),
 		ExecutionState: domain.StateFinalized,
 		Proofs: domain.Proofs{
-			ProofType:             "hash_chain",
+			ProofType:              "hash_chain",
 			CanonicalizationMethod: "rfc8785",
 		},
 	}
@@ -73,12 +73,12 @@ func TestSigner_VerifyTamperedTrace(t *testing.T) {
 	signer := NewSigner()
 
 	trace := &domain.Trace{
-		TraceID:     "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-		Model:       "openai/gpt-4o",
-		CreatedAt:   time.Date(2026, 4, 20, 10, 0, 0, 0, time.UTC),
+		TraceID:        "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+		Model:          "openai/gpt-4o",
+		CreatedAt:      time.Date(2026, 4, 20, 10, 0, 0, 0, time.UTC),
 		ExecutionState: domain.StateFinalized,
 		Proofs: domain.Proofs{
-			ProofType:             "hash_chain",
+			ProofType:              "hash_chain",
 			CanonicalizationMethod: "rfc8785",
 		},
 	}
@@ -103,9 +103,9 @@ func TestSigner_VerifyEmptySignature(t *testing.T) {
 	signer := NewSigner()
 
 	trace := &domain.Trace{
-		TraceID:     "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-		Model:       "openai/gpt-4o",
-		CreatedAt:   time.Date(2026, 4, 20, 10, 0, 0, 0, time.UTC),
+		TraceID:        "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+		Model:          "openai/gpt-4o",
+		CreatedAt:      time.Date(2026, 4, 20, 10, 0, 0, 0, time.UTC),
 		ExecutionState: domain.StateFinalized,
 		Proofs: domain.Proofs{
 			AuditSignature: "",
@@ -122,29 +122,29 @@ func TestSigner_SignatureConsistency(t *testing.T) {
 	signer := NewSigner()
 
 	trace1 := &domain.Trace{
-		TraceID:     "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-		Model:       "openai/gpt-4o",
-		CreatedAt:   time.Date(2026, 4, 20, 10, 0, 0, 0, time.UTC),
+		TraceID:        "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+		Model:          "openai/gpt-4o",
+		CreatedAt:      time.Date(2026, 4, 20, 10, 0, 0, 0, time.UTC),
 		ExecutionState: domain.StateFinalized,
 		Input: domain.Input{
 			Prompt: "test prompt",
 		},
 		Proofs: domain.Proofs{
-			ProofType:             "hash_chain",
+			ProofType:              "hash_chain",
 			CanonicalizationMethod: "rfc8785",
 		},
 	}
 
 	trace2 := &domain.Trace{
-		TraceID:     "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-		Model:       "openai/gpt-4o",
-		CreatedAt:   time.Date(2026, 4, 20, 10, 0, 0, 0, time.UTC),
+		TraceID:        "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+		Model:          "openai/gpt-4o",
+		CreatedAt:      time.Date(2026, 4, 20, 10, 0, 0, 0, time.UTC),
 		ExecutionState: domain.StateFinalized,
 		Input: domain.Input{
 			Prompt: "test prompt",
 		},
 		Proofs: domain.Proofs{
-			ProofType:             "hash_chain",
+			ProofType:              "hash_chain",
 			CanonicalizationMethod: "rfc8785",
 		},
 	}
@@ -161,9 +161,9 @@ func TestSigner_StripsInternalFields(t *testing.T) {
 	signer := NewSigner()
 
 	trace := &domain.Trace{
-		TraceID:     "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-		Model:       "openai/gpt-4o",
-		CreatedAt:   time.Date(2026, 4, 20, 10, 0, 0, 0, time.UTC),
+		TraceID:        "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+		Model:          "openai/gpt-4o",
+		CreatedAt:      time.Date(2026, 4, 20, 10, 0, 0, 0, time.UTC),
 		ExecutionState: domain.StateFinalized,
 		Observations: domain.Observations{
 			TokensCount: 100,
@@ -172,7 +172,7 @@ func TestSigner_StripsInternalFields(t *testing.T) {
 			},
 		},
 		Proofs: domain.Proofs{
-			ProofType:             "hash_chain",
+			ProofType:              "hash_chain",
 			CanonicalizationMethod: "rfc8785",
 		},
 	}
@@ -192,13 +192,13 @@ func TestSigner_StripsExperimentalExtensionFields(t *testing.T) {
 	signer := NewSigner()
 
 	trace := &domain.Trace{
-		TraceID:     "f47ac10b-58cc-4372-a567-0e02b2c3d480",
-		Model:       "openai/gpt-4o",
-		CreatedAt:   time.Date(2026, 4, 20, 10, 0, 0, 0, time.UTC),
+		TraceID:        "f47ac10b-58cc-4372-a567-0e02b2c3d480",
+		Model:          "openai/gpt-4o",
+		CreatedAt:      time.Date(2026, 4, 20, 10, 0, 0, 0, time.UTC),
 		ExecutionState: domain.StateFinalized,
 		Extensions: map[string]any{
 			"sentoris.ai/v1/memory_firewall": map[string]any{
-				"enabled": true,
+				"enabled":               true,
 				"_experimental_feature": "test",
 				"_internal_cache": map[string]any{
 					"key": "value",

@@ -7,14 +7,14 @@ import (
 )
 
 type TTLCleaner struct {
-	traceStore    TraceStore
-	cleanupTicker *time.Ticker
+	traceStore      TraceStore
+	cleanupTicker   *time.Ticker
 	cleanupInterval time.Duration
 }
 
 func NewTTLCleaner(traceStore TraceStore, cleanupInterval time.Duration) *TTLCleaner {
 	return &TTLCleaner{
-		traceStore:    traceStore,
+		traceStore:      traceStore,
 		cleanupInterval: cleanupInterval,
 	}
 }
@@ -46,13 +46,13 @@ func (c *TTLCleaner) Stop() {
 
 func (c *TTLCleaner) cleanupExpiredTraces(ctx context.Context) {
 	log.Println("Starting TTL cleanup for expired traces")
-	
+
 	deletedCount, err := c.traceStore.CleanupExpired(ctx)
 	if err != nil {
 		log.Printf("Failed to cleanup expired traces: %v", err)
 		return
 	}
-	
+
 	if deletedCount > 0 {
 		log.Printf("Successfully deleted %d expired traces", deletedCount)
 	} else {

@@ -99,15 +99,15 @@ func (s *PostgresAPIKeyStore) Create(ctx context.Context, keyHash, keyPrefix, na
 	}
 
 	return &APIKey{
-		KeyID:        fmt.Sprintf("%d", id),
-		KeyHash:      keyHash,
-		KeyPrefix:    keyPrefix,
-		Name:         name,
-		Description:  description,
-		ExpiresAt:    expiresAt,
-		IsActive:     true,
-		Permissions:  permissions,
-		CreatedAt:    createdAt,
+		KeyID:       fmt.Sprintf("%d", id),
+		KeyHash:     keyHash,
+		KeyPrefix:   keyPrefix,
+		Name:        name,
+		Description: description,
+		ExpiresAt:   expiresAt,
+		IsActive:    true,
+		Permissions: permissions,
+		CreatedAt:   createdAt,
 	}, nil
 }
 

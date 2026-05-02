@@ -11,15 +11,15 @@ import (
 )
 
 type Server struct {
-	apiClient *api.Client
-	staticDir string
+	apiClient    *api.Client
+	staticDir    string
 	proxyBaseURL string
 }
 
 func NewServer(apiClient *api.Client, staticDir string, proxyBaseURL string) *Server {
 	return &Server{
-		apiClient: apiClient,
-		staticDir: staticDir,
+		apiClient:    apiClient,
+		staticDir:    staticDir,
 		proxyBaseURL: proxyBaseURL,
 	}
 }
@@ -52,7 +52,7 @@ func (s *Server) StaticHandler() http.Handler {
 		contentType := getContentType(filePath)
 		w.Header().Set("Content-Type", contentType)
 		w.WriteHeader(http.StatusOK)
-		w.Write(content)
+		_, _ = w.Write(content)
 	})
 }
 
@@ -81,7 +81,7 @@ func (s *Server) ProxyHandler() http.Handler {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return
 		}
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 
 		for key, values := range resp.Header {
 			for _, value := range values {
@@ -94,7 +94,7 @@ func (s *Server) ProxyHandler() http.Handler {
 		for {
 			n, err := resp.Body.Read(buf)
 			if n > 0 {
-				w.Write(buf[:n])
+				_, _ = w.Write(buf[:n])
 			}
 			if err != nil {
 				break

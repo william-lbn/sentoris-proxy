@@ -2,9 +2,9 @@ package domain
 
 type Constraints struct {
 	Reproducibility *ReproducibilityConstraint `json:"reproducibility,omitempty"`
-	Budget         *BudgetConstraint         `json:"budget,omitempty"`
-	Privacy        *PrivacyConstraint        `json:"privacy,omitempty"`
-	Extensions     map[string]any            `json:"extensions,omitempty"`
+	Budget          *BudgetConstraint          `json:"budget,omitempty"`
+	Privacy         *PrivacyConstraint         `json:"privacy,omitempty"`
+	Extensions      map[string]any             `json:"extensions,omitempty"`
 }
 
 type ReproducibilityConstraint struct {
@@ -13,15 +13,15 @@ type ReproducibilityConstraint struct {
 }
 
 type BudgetConstraint struct {
-	LimitUSD  float64        `json:"limit_usd,omitempty"`
-	Strategy BudgetStrategy  `json:"strategy,omitempty"`
+	LimitUSD float64        `json:"limit_usd,omitempty"`
+	Strategy BudgetStrategy `json:"strategy,omitempty"`
 }
 
 type PrivacyConstraint struct {
-	Level        PrivacyLevel `json:"level,omitempty"`
-	Strategy    string       `json:"strategy,omitempty"`
-	MaskedFields []string    `json:"masked_fields,omitempty"`
-	Deterministic bool       `json:"deterministic,omitempty"`
+	Level         PrivacyLevel `json:"level,omitempty"`
+	Strategy      string       `json:"strategy,omitempty"`
+	MaskedFields  []string     `json:"masked_fields,omitempty"`
+	Deterministic bool         `json:"deterministic,omitempty"`
 }
 
 func (c *Constraints) GetPrivacyLevel() PrivacyLevel {

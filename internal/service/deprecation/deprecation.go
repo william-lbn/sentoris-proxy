@@ -53,7 +53,7 @@ func (dm *DeprecationManager) GetDeprecationNotice(field string) *DeprecationNot
 func (dm *DeprecationManager) GetAllNotices() map[string]*DeprecationNotice {
 	dm.mu.RLock()
 	defer dm.mu.RUnlock()
-	
+
 	result := make(map[string]*DeprecationNotice)
 	for k, v := range dm.notices {
 		result[k] = v

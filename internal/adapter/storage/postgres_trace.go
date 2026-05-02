@@ -27,8 +27,8 @@ func NewPostgresTraceStore(dsn string) (*PostgresTraceStore, error) {
 	}
 
 	// 配置连接池
-	db.SetMaxOpenConns(25)  // 最大打开连接数
-	db.SetMaxIdleConns(5)   // 最大空闲连接数
+	db.SetMaxOpenConns(25)                 // 最大打开连接数
+	db.SetMaxIdleConns(5)                  // 最大空闲连接数
 	db.SetConnMaxLifetime(5 * time.Minute) // 连接最大生命周期
 
 	// 测试连接，带重试
@@ -95,7 +95,7 @@ func createTraceTable(db *sql.DB) error {
 func (s *PostgresTraceStore) Save(ctx context.Context, trace *domain.Trace) error {
 	// 创建tracer
 	tracer := otel.Tracer("postgres-trace")
-	
+
 	// 创建span
 	ctx, span := tracer.Start(ctx, "SaveTrace")
 	defer span.End()
@@ -321,7 +321,7 @@ func (s *PostgresTraceStore) Update(ctx context.Context, trace *domain.Trace) er
 func (s *PostgresTraceStore) Get(ctx context.Context, traceID string) (*domain.Trace, error) {
 	// 创建tracer
 	tracer := otel.Tracer("postgres-trace")
-	
+
 	// 创建span
 	ctx, span := tracer.Start(ctx, "GetTraceByID")
 	defer span.End()
@@ -414,7 +414,7 @@ func (s *PostgresTraceStore) Get(ctx context.Context, traceID string) (*domain.T
 func (s *PostgresTraceStore) Delete(ctx context.Context, traceID string) error {
 	// 创建tracer
 	tracer := otel.Tracer("postgres-trace")
-	
+
 	// 创建span
 	ctx, span := tracer.Start(ctx, "DeleteTrace")
 	defer span.End()
@@ -433,7 +433,7 @@ func (s *PostgresTraceStore) Delete(ctx context.Context, traceID string) error {
 func (s *PostgresTraceStore) ListBySession(ctx context.Context, sessionID string) ([]*domain.Trace, error) {
 	// 创建tracer
 	tracer := otel.Tracer("postgres-trace")
-	
+
 	// 创建span
 	ctx, span := tracer.Start(ctx, "ListTracesBySession")
 	defer span.End()

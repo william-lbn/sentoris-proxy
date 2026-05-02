@@ -19,7 +19,7 @@ func TestBudgetDegradation(t *testing.T) {
 		AuthHeader: "Bearer test-key",
 		Models:     []string{"gpt-4o", "gpt-3.5-turbo"},
 	})
-	
+
 	// 测试用例1：直接测试预算存储的Reserve方法
 	t.Run("MemoryBudgetStore_Reserve", func(t *testing.T) {
 		// 设置预算为0.000001
@@ -84,7 +84,6 @@ func TestBudgetDegradation(t *testing.T) {
 		// 注意：这里需要通过反射或添加GetModel方法来验证
 		// 暂时跳过验证，因为当前实现没有暴露model字段
 	})
-
 
 	// 测试用例4：软告警策略
 	t.Run("SoftAlertStrategy", func(t *testing.T) {
@@ -169,8 +168,8 @@ func TestTokenEstimation(t *testing.T) {
 	}{
 		{"Empty string", "", 0},
 		{"English text", "Hello, world!", 3}, // ~13 characters / 4 = 3.25 → 4? Wait, let's see the actual implementation
-		{"Chinese text", "你好，世界！", 3},  // ~6 characters / 2 = 3
-		{"Mixed text", "Hello 你好", 3},    // ~7 characters: 5 English + 2 Chinese → (5/4) + (2/2) = 1.25 + 1 = 2.25 → 3
+		{"Chinese text", "你好，世界！", 3},        // ~6 characters / 2 = 3
+		{"Mixed text", "Hello 你好", 3},        // ~7 characters: 5 English + 2 Chinese → (5/4) + (2/2) = 1.25 + 1 = 2.25 → 3
 	}
 
 	for _, tc := range testCases {

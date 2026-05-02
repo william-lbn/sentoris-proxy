@@ -8,26 +8,26 @@ import (
 type ErrorCode string
 
 const (
-	ErrInvalidConstraint          ErrorCode = "SENTORIS_INVALID_CONSTRAINT"
-	ErrBadConstraintCombination    ErrorCode = "SENTORIS_BAD_CONSTRAINT_COMBINATION"
-	ErrBudgetExceeded             ErrorCode = "SENTORIS_BUDGET_EXCEEDED"
-	ErrMissingFocusFields         ErrorCode = "SENTORIS_MISSING_FOCUS_FIELDS"
+	ErrInvalidConstraint         ErrorCode = "SENTORIS_INVALID_CONSTRAINT"
+	ErrBadConstraintCombination  ErrorCode = "SENTORIS_BAD_CONSTRAINT_COMBINATION"
+	ErrBudgetExceeded            ErrorCode = "SENTORIS_BUDGET_EXCEEDED"
+	ErrMissingFocusFields        ErrorCode = "SENTORIS_MISSING_FOCUS_FIELDS"
 	ErrJCSCanonicalizationFailed ErrorCode = "SENTORIS_JCS_CANONICALIZATION_FAILED"
-	ErrSchemaViolation            ErrorCode = "SENTORIS_SCHEMA_VIOLATION"
-	ErrStateTransitionInvalid     ErrorCode = "SENTORIS_STATE_TRANSITION_INVALID"
-	ErrUpstreamTimeout            ErrorCode = "SENTORIS_UPSTREAM_TIMEOUT"
-	ErrUpstreamDisconnect         ErrorCode = "SENTORIS_UPSTREAM_DISCONNECT"
-	ErrUpstreamError              ErrorCode = "SENTORIS_UPSTREAM_ERROR"
-	ErrAuthRequired               ErrorCode = "SENTORIS_AUTH_REQUIRED"
-	ErrPermissionDenied           ErrorCode = "SENTORIS_PERMISSION_DENIED"
-	ErrBaselineNotFound           ErrorCode = "SENTORIS_BASELINE_NOT_FOUND"
-	ErrRateLimited                ErrorCode = "SENTORIS_RATE_LIMITED"
-	ErrStateUnavailable           ErrorCode = "SENTORIS_STATE_UNAVAILABLE"
-	ErrInternalError              ErrorCode = "SENTORIS_INTERNAL_ERROR"
-	ErrVersionMismatch            ErrorCode = "SENTORIS_VERSION_MISMATCH"
-	ErrInvalidMethod              ErrorCode = "SENTORIS_INVALID_METHOD"
-	ErrProviderNotFound           ErrorCode = "SENTORIS_PROVIDER_NOT_FOUND"
-	ErrInvalidInput               ErrorCode = "SENTORIS_INVALID_INPUT"
+	ErrSchemaViolation           ErrorCode = "SENTORIS_SCHEMA_VIOLATION"
+	ErrStateTransitionInvalid    ErrorCode = "SENTORIS_STATE_TRANSITION_INVALID"
+	ErrUpstreamTimeout           ErrorCode = "SENTORIS_UPSTREAM_TIMEOUT"
+	ErrUpstreamDisconnect        ErrorCode = "SENTORIS_UPSTREAM_DISCONNECT"
+	ErrUpstreamError             ErrorCode = "SENTORIS_UPSTREAM_ERROR"
+	ErrAuthRequired              ErrorCode = "SENTORIS_AUTH_REQUIRED"
+	ErrPermissionDenied          ErrorCode = "SENTORIS_PERMISSION_DENIED"
+	ErrBaselineNotFound          ErrorCode = "SENTORIS_BASELINE_NOT_FOUND"
+	ErrRateLimited               ErrorCode = "SENTORIS_RATE_LIMITED"
+	ErrStateUnavailable          ErrorCode = "SENTORIS_STATE_UNAVAILABLE"
+	ErrInternalError             ErrorCode = "SENTORIS_INTERNAL_ERROR"
+	ErrVersionMismatch           ErrorCode = "SENTORIS_VERSION_MISMATCH"
+	ErrInvalidMethod             ErrorCode = "SENTORIS_INVALID_METHOD"
+	ErrProviderNotFound          ErrorCode = "SENTORIS_PROVIDER_NOT_FOUND"
+	ErrInvalidInput              ErrorCode = "SENTORIS_INVALID_INPUT"
 )
 
 func (e ErrorCode) Error() string {
@@ -35,11 +35,11 @@ func (e ErrorCode) Error() string {
 }
 
 type SentorisError struct {
-	Code    ErrorCode          `json:"code"`
-	Message string             `json:"message"`
-	Param   string             `json:"param,omitempty"`
-	Type    string             `json:"type"`
-	Details map[string]any     `json:"details,omitempty"`
+	Code    ErrorCode      `json:"code"`
+	Message string         `json:"message"`
+	Param   string         `json:"param,omitempty"`
+	Type    string         `json:"type"`
+	Details map[string]any `json:"details,omitempty"`
 }
 
 func (e *SentorisError) Error() string {

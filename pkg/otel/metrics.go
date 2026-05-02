@@ -8,20 +8,20 @@ import (
 )
 
 type Metrics struct {
-	TraceCount        prometheus.Counter
-	TraceDuration     prometheus.Histogram
-	TraceErrors       prometheus.Counter
+	TraceCount    prometheus.Counter
+	TraceDuration prometheus.Histogram
+	TraceErrors   prometheus.Counter
 
-	BudgetReserved    prometheus.Counter
-	BudgetUsed        prometheus.Counter
-	BudgetRemaining   prometheus.Gauge
+	BudgetReserved  prometheus.Counter
+	BudgetUsed      prometheus.Counter
+	BudgetRemaining prometheus.Gauge
 
-	UpstreamCalls     prometheus.Counter
-	UpstreamErrors    prometheus.Counter
-	UpstreamLatency   prometheus.Histogram
+	UpstreamCalls   prometheus.Counter
+	UpstreamErrors  prometheus.Counter
+	UpstreamLatency prometheus.Histogram
 
-	SSEEventsSent     prometheus.Counter
-	SSEConnections    prometheus.Gauge
+	SSEEventsSent  prometheus.Counter
+	SSEConnections prometheus.Gauge
 }
 
 func NewMetrics() *Metrics {

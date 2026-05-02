@@ -15,28 +15,28 @@ import (
 type Hook interface {
 	// Name 返回钩子的名称
 	Name() string
-	
+
 	// Priority 返回钩子的优先级（数值越小优先级越高）
 	Priority() int
-	
+
 	// PreExecute 在执行 LLM 请求前调用
 	PreExecute(ctx context.Context, trace *domain.Trace) error
-	
+
 	// PreStream 在流式响应开始前调用
 	PreStream(ctx context.Context, trace *domain.Trace) error
-	
+
 	// PostStream 在流式响应结束后调用
 	PostStream(ctx context.Context, trace *domain.Trace) error
-	
+
 	// OnFailure 在执行失败时调用
 	OnFailure(ctx context.Context, trace *domain.Trace) error
 }
 
 // HookError 表示钩子执行错误
 type HookError struct {
-	Message    string
-	IsFatal    bool
-	IsDegrade  bool
+	Message   string
+	IsFatal   bool
+	IsDegrade bool
 }
 
 func (e *HookError) Error() string {
@@ -83,7 +83,7 @@ func (r *HookRegistry) List() []Hook {
 
 // HookChain 管理多个钩子的执行
 type HookChain struct {
-	hooks []Hook
+	hooks    []Hook
 	strategy string // "short-circuit" 或 "all-execute"
 }
 
@@ -128,10 +128,7 @@ func (c *HookChain) PostStream(ctx context.Context, trace *domain.Trace) error {
 func (c *HookChain) OnFailure(ctx context.Context, trace *domain.Trace) error {
 	// OnFailure 总是执行所有钩子
 	for _, hook := range c.hooks {
-		if err := hook.OnFailure(ctx, trace); err != nil {
-			// 即使某个钩子失败，也要继续执行其他钩子
-			// 但记录错误
-		}
+		_ = hook.OnFailure(ctx, trace)
 	}
 	return nil
 }
@@ -190,9 +187,9 @@ func NewNoopHook() *NoopHook {
 
 // PII patterns for detection
 var (
-	emailPattern     = regexp.MustCompile(`[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}`)
-	phonePattern     = regexp.MustCompile(`(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}`)
-	ssnPattern       = regexp.MustCompile(`\b\d{3}-\d{2}-\d{4}\b`)
+	emailPattern      = regexp.MustCompile(`[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}`)
+	phonePattern      = regexp.MustCompile(`(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}`)
+	ssnPattern        = regexp.MustCompile(`\b\d{3}-\d{2}-\d{4}\b`)
 	creditCardPattern = regexp.MustCompile(`\b(?:\d[ -]*?){13,16}\b`)
 )
 
@@ -214,13 +211,13 @@ func (h *PIIDetectorHook) Priority() int {
 // PreExecute 检测并处理个人身份信息
 func (h *PIIDetectorHook) PreExecute(ctx context.Context, trace *domain.Trace) error {
 	h.detectedTypes = []string{}
-	
+
 	// Check prompt for PII
 	if trace.Input.Prompt != nil {
 		promptStr := fmt.Sprintf("%v", trace.Input.Prompt)
 		h.detectPIIInString(promptStr)
 	}
-	
+
 	// Check prompt with JSON serialization for complex objects
 	if trace.Input.Prompt != nil {
 		promptBytes, err := json.Marshal(trace.Input.Prompt)
@@ -228,7 +225,7 @@ func (h *PIIDetectorHook) PreExecute(ctx context.Context, trace *domain.Trace) e
 			h.detectPIIInString(string(promptBytes))
 		}
 	}
-	
+
 	// Record PII detection in trace metadata
 	if len(h.detectedTypes) > 0 {
 		if trace.Input.Metadata == nil {
@@ -237,7 +234,7 @@ func (h *PIIDetectorHook) PreExecute(ctx context.Context, trace *domain.Trace) e
 		trace.Input.Metadata["pii_detected"] = true
 		trace.Input.Metadata["pii_types"] = h.detectedTypes
 	}
-	
+
 	return nil
 }
 
@@ -267,14 +264,14 @@ func (h *PIIDetectorHook) PostStream(ctx context.Context, trace *domain.Trace) e
 	if trace.Output.Response != nil {
 		responseStr := fmt.Sprintf("%v", trace.Output.Response)
 		outputDetected := []string{}
-		
+
 		if emailPattern.MatchString(responseStr) {
 			outputDetected = append(outputDetected, "email")
 		}
 		if phonePattern.MatchString(responseStr) {
 			outputDetected = append(outputDetected, "phone")
 		}
-		
+
 		if len(outputDetected) > 0 {
 			if trace.Input.Metadata == nil {
 				trace.Input.Metadata = map[string]any{}
@@ -323,25 +320,25 @@ func (h *RateLimiterHook) Priority() int {
 func (h *RateLimiterHook) PreExecute(ctx context.Context, trace *domain.Trace) error {
 	h.mu.Lock()
 	defer h.mu.Unlock()
-	
+
 	if h.requests == nil {
 		h.requests = make(map[string]*sessionRequestCounter)
 	}
-	
+
 	if h.maxRequestsPerMinute == 0 {
 		h.maxRequestsPerMinute = 100 // Default: 100 requests per minute
 	}
-	
+
 	var sessionID string
 	if trace.SessionID != nil {
 		sessionID = *trace.SessionID
 	} else {
 		sessionID = "default"
 	}
-	
+
 	counter, exists := h.requests[sessionID]
 	now := time.Now()
-	
+
 	if !exists || now.Sub(counter.startTime) > time.Minute {
 		// New session or reset window
 		h.requests[sessionID] = &sessionRequestCounter{
@@ -350,10 +347,10 @@ func (h *RateLimiterHook) PreExecute(ctx context.Context, trace *domain.Trace) e
 		}
 		return nil
 	}
-	
+
 	// Increment counter
 	counter.count++
-	
+
 	// Check if limit exceeded
 	if counter.count > h.maxRequestsPerMinute {
 		return &HookError{
@@ -361,14 +358,14 @@ func (h *RateLimiterHook) PreExecute(ctx context.Context, trace *domain.Trace) e
 			IsFatal: true,
 		}
 	}
-	
+
 	// Record rate limit info in metadata
 	if trace.Input.Metadata == nil {
 		trace.Input.Metadata = map[string]any{}
 	}
 	trace.Input.Metadata["rate_limit_count"] = counter.count
 	trace.Input.Metadata["rate_limit_max"] = h.maxRequestsPerMinute
-	
+
 	return nil
 }
 

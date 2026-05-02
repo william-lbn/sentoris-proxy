@@ -11,7 +11,7 @@ type CircuitState string
 
 const (
 	CircuitStateClosed   CircuitState = "closed"
-	CircuitStateOpen    CircuitState = "open"
+	CircuitStateOpen     CircuitState = "open"
 	CircuitStateHalfOpen CircuitState = "half_open"
 )
 
@@ -133,10 +133,10 @@ func containsHelper(s, substr string) bool {
 
 type CircuitBreaker struct {
 	failureThreshold int
-	timeout         time.Duration
-	state           CircuitState
-	failureCount    int
-	lastFailure     time.Time
+	timeout          time.Duration
+	state            CircuitState
+	failureCount     int
+	lastFailure      time.Time
 }
 
 func NewCircuitBreaker(threshold int, timeout time.Duration) *CircuitBreaker {

@@ -99,11 +99,11 @@ func (l *Logger) SanitizeMap(data map[string]any) map[string]any {
 	result := make(map[string]any)
 	for k, v := range data {
 		key := strings.ToLower(k)
-		if strings.Contains(key, "password") || 
-		   strings.Contains(key, "token") || 
-		   strings.Contains(key, "secret") || 
-		   strings.Contains(key, "key") ||
-		   strings.Contains(key, "auth") {
+		if strings.Contains(key, "password") ||
+			strings.Contains(key, "token") ||
+			strings.Contains(key, "secret") ||
+			strings.Contains(key, "key") ||
+			strings.Contains(key, "auth") {
 			result[k] = "******"
 		} else {
 			result[k] = v

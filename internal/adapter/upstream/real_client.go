@@ -92,7 +92,7 @@ func (c *RealUpstreamClient) Chat(ctx context.Context, req *ChatRequest) (*ChatR
 		Usage struct {
 			PromptTokens     int `json:"prompt_tokens"`
 			CompletionTokens int `json:"completion_tokens"`
-			TotalTokens     int `json:"total_tokens"`
+			TotalTokens      int `json:"total_tokens"`
 		} `json:"usage"`
 	}
 

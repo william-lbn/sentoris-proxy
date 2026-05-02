@@ -8,20 +8,20 @@ import (
 type ExecutionState string
 
 const (
-	StateInit            ExecutionState = "INIT"
-	StateConstraintEval  ExecutionState = "CONSTRAINT_EVAL"
-	StateExecuting       ExecutionState = "EXECUTING"
-	StateValidation      ExecutionState = "VALIDATION"
-	StateFinalized       ExecutionState = "FINALIZED"
-	StateFailed          ExecutionState = "FAILED"
+	StateInit           ExecutionState = "INIT"
+	StateConstraintEval ExecutionState = "CONSTRAINT_EVAL"
+	StateExecuting      ExecutionState = "EXECUTING"
+	StateValidation     ExecutionState = "VALIDATION"
+	StateFinalized      ExecutionState = "FINALIZED"
+	StateFailed         ExecutionState = "FAILED"
 )
 
 type PrivacyLevel string
 
 const (
-	PrivacyRaw       PrivacyLevel = "raw"
-	PrivacyMasked    PrivacyLevel = "masked"
-	PrivacyHashOnly  PrivacyLevel = "hash_only"
+	PrivacyRaw      PrivacyLevel = "raw"
+	PrivacyMasked   PrivacyLevel = "masked"
+	PrivacyHashOnly PrivacyLevel = "hash_only"
 )
 
 type ReproducibilityMode string
@@ -35,16 +35,16 @@ const (
 type BudgetStrategy string
 
 const (
-	BudgetStrategyHardStop    BudgetStrategy = "hard_stop"
+	BudgetStrategyHardStop     BudgetStrategy = "hard_stop"
 	BudgetStrategyDegradeModel BudgetStrategy = "degrade_model"
-	BudgetStrategySoftAlert   BudgetStrategy = "soft_alert"
+	BudgetStrategySoftAlert    BudgetStrategy = "soft_alert"
 )
 
 type PolicyDecision string
 
 const (
-	PolicyDecisionAllow  PolicyDecision = "allow"
-	PolicyDecisionBlock  PolicyDecision = "block"
+	PolicyDecisionAllow   PolicyDecision = "allow"
+	PolicyDecisionBlock   PolicyDecision = "block"
 	PolicyDecisionDegrade PolicyDecision = "degrade"
 )
 
@@ -61,17 +61,17 @@ const (
 type DegradeAction string
 
 const (
-	DegradeActionSwitchModel         DegradeAction = "SWITCH_MODEL"
-	DegradeActionReduceMaxTokens     DegradeAction = "REDUCE_MAX_TOKENS"
-	DegradeActionSkipOptionalPlugin  DegradeAction = "SKIP_OPTIONAL_PLUGIN"
+	DegradeActionSwitchModel           DegradeAction = "SWITCH_MODEL"
+	DegradeActionReduceMaxTokens       DegradeAction = "REDUCE_MAX_TOKENS"
+	DegradeActionSkipOptionalPlugin    DegradeAction = "SKIP_OPTIONAL_PLUGIN"
 	DegradeActionReduceSamplingQuality DegradeAction = "REDUCE_SAMPLING_QUALITY"
-	DegradeActionFallbackCached      DegradeAction = "FALLBACK_CACHED"
+	DegradeActionFallbackCached        DegradeAction = "FALLBACK_CACHED"
 )
 
 type ChangeType string
 
 const (
-	ChangeTypeValueChange      ChangeType = "VALUE_CHANGE"
+	ChangeTypeValueChange     ChangeType = "VALUE_CHANGE"
 	ChangeTypeStructureChange ChangeType = "STRUCTURE_CHANGE"
 	ChangeTypeFactualError    ChangeType = "FACTUAL_ERROR"
 	ChangeTypeHallucination   ChangeType = "HALLUCINATION"
@@ -92,25 +92,25 @@ const (
 type Recommendation string
 
 const (
-	RecommendationApprove      Recommendation = "APPROVE"
+	RecommendationApprove        Recommendation = "APPROVE"
 	RecommendationReviewRequired Recommendation = "REVIEW_REQUIRED"
-	RecommendationBlockRelease Recommendation = "BLOCK_RELEASE"
+	RecommendationBlockRelease   Recommendation = "BLOCK_RELEASE"
 )
 
 type Trace struct {
-	TraceID            string            `json:"trace_id"`
-	ParentID           *string           `json:"parent_id,omitempty"`
-	SessionID         *string           `json:"session_id,omitempty"`
-	ExecutionState    ExecutionState    `json:"execution_state"`
-	Model              string            `json:"model"`
-	Input              Input             `json:"input"`
-	Output             Output            `json:"output"`
-	Observations       Observations      `json:"observations"`
-	Proofs             Proofs            `json:"proofs"`
+	TraceID            string             `json:"trace_id"`
+	ParentID           *string            `json:"parent_id,omitempty"`
+	SessionID          *string            `json:"session_id,omitempty"`
+	ExecutionState     ExecutionState     `json:"execution_state"`
+	Model              string             `json:"model"`
+	Input              Input              `json:"input"`
+	Output             Output             `json:"output"`
+	Observations       Observations       `json:"observations"`
+	Proofs             Proofs             `json:"proofs"`
 	ConstraintsApplied ConstraintsApplied `json:"constraints_applied"`
-	CreatedAt          time.Time         `json:"created_at"`
-	TTLExpireAt       *time.Time        `json:"ttl_expire_at,omitempty"`
-	Extensions        map[string]any    `json:"extensions,omitempty"`
+	CreatedAt          time.Time          `json:"created_at"`
+	TTLExpireAt        *time.Time         `json:"ttl_expire_at,omitempty"`
+	Extensions         map[string]any     `json:"extensions,omitempty"`
 }
 
 type Input struct {
@@ -121,19 +121,19 @@ type Input struct {
 }
 
 type Output struct {
-	Response    *string      `json:"response,omitempty"`
-	Truncated   bool         `json:"truncated"`
+	Response     *string      `json:"response,omitempty"`
+	Truncated    bool         `json:"truncated"`
 	FinishReason FinishReason `json:"finish_reason,omitempty"`
 }
 
 type Observations struct {
-	TokensCount      int              `json:"tokens_count,omitempty"`
-	CostEstimatedUSD float64          `json:"cost_estimated_usd,omitempty"`
-	LatencyMs        int              `json:"latency_ms,omitempty"`
+	TokensCount      int               `json:"tokens_count,omitempty"`
+	CostEstimatedUSD float64           `json:"cost_estimated_usd,omitempty"`
+	LatencyMs        int               `json:"latency_ms,omitempty"`
 	StateTransitions []StateTransition `json:"state_transitions,omitempty"`
-	Error            *ErrorInfo       `json:"error,omitempty"`
-	DegradeAction    *DegradeAction   `json:"degrade_action,omitempty"`
-	InternalMetrics  map[string]any   `json:"internal_metrics,omitempty"`
+	Error            *ErrorInfo        `json:"error,omitempty"`
+	DegradeAction    *DegradeAction    `json:"degrade_action,omitempty"`
+	InternalMetrics  map[string]any    `json:"internal_metrics,omitempty"`
 }
 
 type StateTransition struct {
@@ -150,27 +150,27 @@ type ErrorInfo struct {
 
 type Proofs struct {
 	AuditSignature         string `json:"audit_signature"`
-	ProofType             string `json:"proof_type,omitempty"`
+	ProofType              string `json:"proof_type,omitempty"`
 	CanonicalizationMethod string `json:"canonicalization_method,omitempty"`
 }
 
 type ConstraintsApplied struct {
-	BudgetLimitUSD      float64        `json:"budget_limit_usd,omitempty"`
-	BudgetActualUSD     float64        `json:"budget_actual_usd,omitempty"`
-	BudgetStrategy      BudgetStrategy `json:"budget_strategy,omitempty"`
-	PrivacyLevel        PrivacyLevel   `json:"privacy_level,omitempty"`
-	PrivacyMaskedFields []string       `json:"privacy_masked_fields,omitempty"`
-	ReproducibilityMode ReproducibilityMode `json:"reproducibility_mode,omitempty"`
-	ReproducibilitySeed *int64         `json:"reproducibility_seed,omitempty"`
-	PolicyEvaluation    *PolicyEvaluation `json:"policy_evaluation,omitempty"`
-	DegradeAction       *DegradeAction `json:"degrade_action,omitempty"`
-	NegotiatedCapabilities []string   `json:"negotiated_capabilities,omitempty"`
+	BudgetLimitUSD         float64             `json:"budget_limit_usd,omitempty"`
+	BudgetActualUSD        float64             `json:"budget_actual_usd,omitempty"`
+	BudgetStrategy         BudgetStrategy      `json:"budget_strategy,omitempty"`
+	PrivacyLevel           PrivacyLevel        `json:"privacy_level,omitempty"`
+	PrivacyMaskedFields    []string            `json:"privacy_masked_fields,omitempty"`
+	ReproducibilityMode    ReproducibilityMode `json:"reproducibility_mode,omitempty"`
+	ReproducibilitySeed    *int64              `json:"reproducibility_seed,omitempty"`
+	PolicyEvaluation       *PolicyEvaluation   `json:"policy_evaluation,omitempty"`
+	DegradeAction          *DegradeAction      `json:"degrade_action,omitempty"`
+	NegotiatedCapabilities []string            `json:"negotiated_capabilities,omitempty"`
 }
 
 type PolicyEvaluation struct {
-	Decision   PolicyDecision `json:"decision,omitempty"`
-	ChecksPassed []string    `json:"checks_passed,omitempty"`
-	NegotiatedCapabilities []string `json:"negotiated_capabilities,omitempty"`
+	Decision               PolicyDecision `json:"decision,omitempty"`
+	ChecksPassed           []string       `json:"checks_passed,omitempty"`
+	NegotiatedCapabilities []string       `json:"negotiated_capabilities,omitempty"`
 }
 
 func (t *Trace) IsValid() bool {

@@ -67,13 +67,13 @@ func NewStreamBudgetInterceptor(budgetStore storage.BudgetStore, modelRouter *ro
 func (i *StreamBudgetInterceptor) Intercept(ctx context.Context, content string) (bool, error) {
 	// 估算token数
 	tokenCount := i.tokenEstimator.EstimateTokens(content)
-	
+
 	// 估算成本
 	cost, err := i.estimateCost(tokenCount)
 	if err != nil {
 		return false, err
 	}
-	
+
 	// 检查预算
 	if i.budgetLimit > 0 {
 		// 使用原子操作预扣预算
@@ -81,16 +81,16 @@ func (i *StreamBudgetInterceptor) Intercept(ctx context.Context, content string)
 		if err != nil {
 			return false, fmt.Errorf("failed to reserve budget: %w", err)
 		}
-		
+
 		if !reserved {
 			// 预算不足，根据策略处理
 			return i.handleBudgetExceeded(ctx)
 		}
-		
+
 		// 记录已预留的金额
 		i.reservedAmount += cost
 	}
-	
+
 	return true, nil
 }
 
@@ -103,7 +103,7 @@ func (i *StreamBudgetInterceptor) estimateCost(tokenCount int) (float64, error) 
 		inputPrice = 0.002 // 默认 $0.002 per 1k tokens
 		outputPrice = 0.002
 	}
-	
+
 	// 计算成本（使用平均价格）
 	avgPrice := (inputPrice + outputPrice) / 2
 	return float64(tokenCount) * avgPrice / 1000, nil

@@ -27,8 +27,8 @@ type BatchProof struct {
 }
 
 type ProofNode struct {
-	Hash  string `json:"hash"`
-	IsLeft bool  `json:"is_left"`
+	Hash   string `json:"hash"`
+	IsLeft bool   `json:"is_left"`
 }
 
 func NewMerkleTree(signatures []string) *MerkleTree {

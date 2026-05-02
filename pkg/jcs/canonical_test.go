@@ -228,16 +228,16 @@ func TestJCSConsistency_HashConsistency(t *testing.T) {
 
 func TestJCSConsistency_StrippingConsistency(t *testing.T) {
 	input := map[string]any{
-		"trace_id":   "test-trace",
-		"model":      "gpt-4o",
-		"_internal":  "secret",
+		"trace_id":  "test-trace",
+		"model":     "gpt-4o",
+		"_internal": "secret",
 		"internal_metrics": map[string]any{
 			"latency": 100,
 		},
 		"extensions": map[string]any{
 			"public_ext": map[string]any{
-				"enabled":         true,
-				"_experimental":   "hidden",
+				"enabled":        true,
+				"_experimental":  "hidden",
 				"_internal_data": 42,
 			},
 			"_private_ext": map[string]any{

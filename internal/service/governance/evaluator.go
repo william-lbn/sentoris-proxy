@@ -25,9 +25,9 @@ type ConstraintEvaluator struct {
 
 func NewConstraintEvaluator(budgetStore interface{}) *ConstraintEvaluator {
 	return &ConstraintEvaluator{
-		budgetService:  NewBudgetService(nil),
-		privacyService: NewPrivacyService(),
-		hookChain:      nil,
+		budgetService:   NewBudgetService(nil),
+		privacyService:  NewPrivacyService(),
+		hookChain:       nil,
 		constraintStore: budgetStore,
 	}
 }

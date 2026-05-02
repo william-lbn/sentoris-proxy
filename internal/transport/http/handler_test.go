@@ -92,7 +92,7 @@ func TestChatCompletion(t *testing.T) {
 				{"role": "user", "content": "Tell me a short story"},
 			},
 			"max_tokens": 100,
-			"stream": true,
+			"stream":     true,
 		}
 
 		reqJSON, err := json.Marshal(reqBody)

@@ -67,7 +67,7 @@ func (d *Differ) Compare(baseline, candidate *domain.Trace) (*domain.RiskReport,
 	riskScore := d.calculateRiskScore(similarity, baseline.Model != candidate.Model)
 	recommendation, reasons := d.determineRecommendationWithReasons(riskScore, baseline.Model != candidate.Model, report)
 	report.SetRiskWithReasons(riskScore, recommendation, reasons)
-	
+
 	// 确保risk.methodology与实际使用的算法一致
 	if report.Risk != nil {
 		report.Risk.Methodology = "hybrid_edit_distance_model_change_v2"
@@ -135,14 +135,14 @@ func (d *Differ) analyzeFieldDifferences(report *domain.RiskReport, baseline, ca
 		if candidate.Output.Response != nil {
 			newValue = *candidate.Output.Response
 		}
-		
+
 		changeType := domain.ChangeTypeValueChange
 		if baseline.Output.Response == nil {
 			changeType = domain.ChangeTypeAdded
 		} else if candidate.Output.Response == nil {
 			changeType = domain.ChangeTypeRemoved
 		}
-		
+
 		riskLevel := domain.RiskLevelLow
 		if len(oldValue) > 0 && len(newValue) > 0 {
 			editDist := LevenshteinDistance(oldValue, newValue)
@@ -160,7 +160,7 @@ func (d *Differ) analyzeFieldDifferences(report *domain.RiskReport, baseline, ca
 			(baseline.Output.Response != nil && candidate.Output.Response == nil) {
 			riskLevel = domain.RiskLevelHigh
 		}
-		
+
 		confidence := 0.9
 		report.AddFieldRisk("output.response", oldValue, newValue, riskLevel, &confidence, changeType)
 	}
@@ -214,29 +214,29 @@ func (d *Differ) valuesEqual(a, b any) bool {
 	if a == nil || b == nil {
 		return false
 	}
-	
+
 	// Try deep equality check
 	if reflect.DeepEqual(a, b) {
 		return true
 	}
-	
+
 	// Try JSON serialization for complex objects
 	aJSON, aErr := json.Marshal(a)
 	bJSON, bErr := json.Marshal(b)
 	if aErr == nil && bErr == nil {
 		return string(aJSON) == string(bJSON)
 	}
-	
+
 	return false
 }
 
 func (d *Differ) assessParamRisk(key string, oldValue, newValue any) domain.RiskLevel {
 	// 关键参数的风险评估
 	criticalParams := map[string]bool{
-		"temperature": true,
-		"top_p": true,
-		"max_tokens": true,
-		"stop": true,
+		"temperature":   true,
+		"top_p":         true,
+		"max_tokens":    true,
+		"stop":          true,
 		"system_prompt": true,
 	}
 

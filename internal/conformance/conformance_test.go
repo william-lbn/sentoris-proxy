@@ -27,58 +27,58 @@ var testVectorsData []byte
 var baselineData []byte
 
 type TestVector struct {
-	Version     string        `json:"version"`
-	Description string        `json:"description"`
-	Categories  []string      `json:"categories"`
-	Tests       []TestCase     `json:"tests"`
+	Version     string     `json:"version"`
+	Description string     `json:"description"`
+	Categories  []string   `json:"categories"`
+	Tests       []TestCase `json:"tests"`
 }
 
 type TestCase struct {
-	ID          string      `json:"id"`
-	Category    string      `json:"category"`
-	Level       string      `json:"level"`
-	Description string      `json:"description"`
-	Action      TestAction  `json:"action"`
-	Expected    TestExpect  `json:"expected"`
-	Setup       TestSetup   `json:"setup,omitempty"`
+	ID          string     `json:"id"`
+	Category    string     `json:"category"`
+	Level       string     `json:"level"`
+	Description string     `json:"description"`
+	Action      TestAction `json:"action"`
+	Expected    TestExpect `json:"expected"`
+	Setup       TestSetup  `json:"setup,omitempty"`
 }
 
 type TestAction struct {
 	Type    string                 `json:"type"`
 	Method  string                 `json:"method,omitempty"`
 	Path    string                 `json:"path,omitempty"`
-	Headers  map[string]string      `json:"headers,omitempty"`
-	Body     map[string]interface{} `json:"body,omitempty"`
-	Input    map[string]interface{} `json:"input,omitempty"`
+	Headers map[string]string      `json:"headers,omitempty"`
+	Body    map[string]interface{} `json:"body,omitempty"`
+	Input   map[string]interface{} `json:"input,omitempty"`
 }
 
 type TestExpect struct {
-	Valid            bool                   `json:"valid,omitempty"`
-	ErrorKeyword     string                 `json:"error_keyword,omitempty"`
-	ErrorPath        []string               `json:"error_path,omitempty"`
-	SignatureValid   bool                   `json:"signature_valid,omitempty"`
-	JCSCompliant    bool                   `json:"jcs_compliant,omitempty"`
-	Algorithm        string                 `json:"algorithm,omitempty"`
-	Canonicalization string                 `json:"canonicalization,omitempty"`
-	CanonicalizationMethod string           `json:"canonicalization_method,omitempty"`
-	SignatureConsistent bool              `json:"signature_consistent,omitempty"`
-	StrippedFields   []string             `json:"stripped_fields,omitempty"`
-	Status           int                  `json:"status,omitempty"`
-	Headers          map[string]interface{} `json:"headers,omitempty"`
-	Trace            map[string]interface{} `json:"trace,omitempty"`
-	UnknownIgnored   bool                 `json:"unknown_ignored,omitempty"`
+	Valid                  bool                   `json:"valid,omitempty"`
+	ErrorKeyword           string                 `json:"error_keyword,omitempty"`
+	ErrorPath              []string               `json:"error_path,omitempty"`
+	SignatureValid         bool                   `json:"signature_valid,omitempty"`
+	JCSCompliant           bool                   `json:"jcs_compliant,omitempty"`
+	Algorithm              string                 `json:"algorithm,omitempty"`
+	Canonicalization       string                 `json:"canonicalization,omitempty"`
+	CanonicalizationMethod string                 `json:"canonicalization_method,omitempty"`
+	SignatureConsistent    bool                   `json:"signature_consistent,omitempty"`
+	StrippedFields         []string               `json:"stripped_fields,omitempty"`
+	Status                 int                    `json:"status,omitempty"`
+	Headers                map[string]interface{} `json:"headers,omitempty"`
+	Trace                  map[string]interface{} `json:"trace,omitempty"`
+	UnknownIgnored         bool                   `json:"unknown_ignored,omitempty"`
 }
 
 type TestSetup struct {
-	BudgetLimitUSD           float64              `json:"budget_limit_usd,omitempty"`
+	BudgetLimitUSD          float64                `json:"budget_limit_usd,omitempty"`
 	MockLLMResponse         map[string]interface{} `json:"mock_llm_response,omitempty"`
-	DegradeMap              map[string]string    `json:"degrade_map,omitempty"`
-	BaselineTraceID          string               `json:"baseline_trace_id,omitempty"`
-	BaselineModel            string               `json:"baseline_model,omitempty"`
-	TraceWithInternalFields  map[string]interface{} `json:"trace_with_internal_fields,omitempty"`
-	ForceBudgetExceeded     bool                 `json:"force_budget_exceeded,omitempty"`
-	StreamChunks            int                  `json:"stream_chunks,omitempty"`
-	TokensPerChunk         int                  `json:"tokens_per_chunk,omitempty"`
+	DegradeMap              map[string]string      `json:"degrade_map,omitempty"`
+	BaselineTraceID         string                 `json:"baseline_trace_id,omitempty"`
+	BaselineModel           string                 `json:"baseline_model,omitempty"`
+	TraceWithInternalFields map[string]interface{} `json:"trace_with_internal_fields,omitempty"`
+	ForceBudgetExceeded     bool                   `json:"force_budget_exceeded,omitempty"`
+	StreamChunks            int                    `json:"stream_chunks,omitempty"`
+	TokensPerChunk          int                    `json:"tokens_per_chunk,omitempty"`
 }
 
 func TestConformance(t *testing.T) {
@@ -109,13 +109,13 @@ func runTestCase(t *testing.T, testCase TestCase) {
 
 func testSchemaValidation(t *testing.T, testCase TestCase) {
 	input := testCase.Action.Input
-	
+
 	var trace domain.Trace
 	traceData, err := json.Marshal(input)
 	if err != nil {
 		t.Fatalf("Failed to marshal input: %v", err)
 	}
-	
+
 	if err := json.Unmarshal(traceData, &trace); err != nil {
 		if !testCase.Expected.Valid {
 			if testCase.Expected.ErrorKeyword != "" {
@@ -269,10 +269,10 @@ func TestExecutionStateEnum(t *testing.T) {
 	for _, state := range validStates {
 		t.Run(string(state), func(t *testing.T) {
 			trace := &domain.Trace{
-				TraceID:         "test-trace-id",
-				Model:           "gpt-4o",
-				CreatedAt:       time.Now().UTC(),
-				ExecutionState:  state,
+				TraceID:        "test-trace-id",
+				Model:          "gpt-4o",
+				CreatedAt:      time.Now().UTC(),
+				ExecutionState: state,
 			}
 
 			if trace.ExecutionState != state {
@@ -497,7 +497,7 @@ func TestPrivacyMaskedApplied(t *testing.T) {
 		},
 		"sentoris_constraints": map[string]interface{}{
 			"privacy": map[string]interface{}{
-				"level": "masked",
+				"level":         "masked",
 				"masked_fields": []string{"$.messages[0].content"},
 			},
 		},

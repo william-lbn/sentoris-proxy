@@ -24,28 +24,28 @@ func NewInputSanitizer() *InputSanitizer {
 }
 
 type SanitizationResult struct {
-	IsClean       bool
-	OriginalInput string
+	IsClean        bool
+	OriginalInput  string
 	SanitizedInput string
-	Warnings      []string
-	Blocked       bool
-	BlockReason   string
+	Warnings       []string
+	Blocked        bool
+	BlockReason    string
 }
 
 func (s *InputSanitizer) Sanitize(ctx context.Context, input string) *SanitizationResult {
 	result := &SanitizationResult{
-		IsClean:       true,
-		OriginalInput: input,
+		IsClean:        true,
+		OriginalInput:  input,
 		SanitizedInput: input,
-		Warnings:      []string{},
-		Blocked:       false,
+		Warnings:       []string{},
+		Blocked:        false,
 	}
 
 	for _, pattern := range s.injectionPatterns {
 		if pattern.MatchString(input) {
 			result.IsClean = false
 			result.Warnings = append(result.Warnings, "Potential injection pattern detected: "+pattern.String())
-			
+
 			if s.shouldBlock(pattern) {
 				result.Blocked = true
 				result.BlockReason = "Detected malicious injection attempt"
@@ -62,7 +62,7 @@ func (s *InputSanitizer) Sanitize(ctx context.Context, input string) *Sanitizati
 
 func (s *InputSanitizer) SanitizeMessages(ctx context.Context, messages []map[string]string) []map[string]string {
 	sanitizedMessages := make([]map[string]string, len(messages))
-	
+
 	for i, msg := range messages {
 		sanitizedMsg := make(map[string]string)
 		for k, v := range msg {
@@ -79,7 +79,7 @@ func (s *InputSanitizer) SanitizeMessages(ctx context.Context, messages []map[st
 		}
 		sanitizedMessages[i] = sanitizedMsg
 	}
-	
+
 	return sanitizedMessages
 }
 
@@ -93,7 +93,7 @@ func (s *InputSanitizer) shouldBlock(pattern *regexp.Regexp) bool {
 		"bypass filter",
 		"disable security",
 	}
-	
+
 	patternStr := pattern.String()
 	for _, bp := range blockingPatterns {
 		if strings.Contains(strings.ToLower(patternStr), bp) {
@@ -105,15 +105,15 @@ func (s *InputSanitizer) shouldBlock(pattern *regexp.Regexp) bool {
 
 func (s *InputSanitizer) applyBasicSanitization(input string) string {
 	sanitized := input
-	
+
 	sanitized = strings.ReplaceAll(sanitized, "<script>", "[REDACTED]")
 	sanitized = strings.ReplaceAll(sanitized, "</script>", "[REDACTED]")
 	sanitized = strings.ReplaceAll(sanitized, "<iframe>", "[REDACTED]")
 	sanitized = strings.ReplaceAll(sanitized, "</iframe>", "[REDACTED]")
-	
+
 	sanitized = strings.ReplaceAll(sanitized, "javascript:", "[REDACTED]")
 	sanitized = strings.ReplaceAll(sanitized, "data:", "[REDACTED]")
-	
+
 	return sanitized
 }
 
@@ -121,20 +121,20 @@ func (s *InputSanitizer) RedactForLogging(data string) string {
 	if data == "" {
 		return "[REDACTED]"
 	}
-	
+
 	if len(data) > 50 {
 		return "[REDACTED]"
 	}
-	
+
 	return "[REDACTED]"
 }
 
 func (s *InputSanitizer) RedactFieldsForLogging(fields map[string]interface{}) map[string]interface{} {
 	redacted := make(map[string]interface{})
-	
+
 	for k, v := range fields {
 		sensitiveFields := []string{"prompt", "response", "content", "message", "input", "output", "api_key", "password", "secret"}
-		
+
 		isSensitive := false
 		for _, sf := range sensitiveFields {
 			if strings.Contains(strings.ToLower(k), sf) {
@@ -142,14 +142,14 @@ func (s *InputSanitizer) RedactFieldsForLogging(fields map[string]interface{}) m
 				break
 			}
 		}
-		
+
 		if isSensitive {
 			redacted[k] = "[REDACTED]"
 		} else {
 			redacted[k] = v
 		}
 	}
-	
+
 	return redacted
 }
 

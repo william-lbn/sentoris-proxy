@@ -34,17 +34,17 @@ type MetricsResponse struct {
 	TotalCost    float64 `json:"total_cost"`
 	SuccessRate  float64 `json:"success_rate"`
 	Router       struct {
-		ModelsCount   int `json:"models_count"`
-		ProvidersCount int `json:"providers_count"`
-		Status        string `json:"status"`
+		ModelsCount    int    `json:"models_count"`
+		ProvidersCount int    `json:"providers_count"`
+		Status         string `json:"status"`
 	} `json:"router"`
 	Trace struct {
 		Count int `json:"count"`
 		Stats struct {
-			ByModel map[string]int `json:"by_model"`
-			ByState map[string]int `json:"by_state"`
-			Total   int            `json:"total"`
-			TotalCost float64      `json:"total_cost"`
+			ByModel   map[string]int `json:"by_model"`
+			ByState   map[string]int `json:"by_state"`
+			Total     int            `json:"total"`
+			TotalCost float64        `json:"total_cost"`
 		} `json:"stats"`
 		Status string `json:"status"`
 	} `json:"trace"`
@@ -57,33 +57,33 @@ type MetricsResponse struct {
 type ModelsResponse struct {
 	Models []struct {
 		Provider struct {
-			BaseURL    string   `json:"base_url"`
-			IsDefault  bool     `json:"is_default"`
-			Models     []string `json:"models"`
-			Name       string   `json:"name"`
-			Pricing    struct {
+			BaseURL   string   `json:"base_url"`
+			IsDefault bool     `json:"is_default"`
+			Models    []string `json:"models"`
+			Name      string   `json:"name"`
+			Pricing   struct {
 				InputPer1K  float64 `json:"input_per_1k"`
 				OutputPer1K float64 `json:"output_per_1k"`
 			} `json:"pricing"`
 			Status string `json:"status"`
 		} `json:"provider"`
 	} `json:"models"`
-	TotalModels   []string `json:"total_models"`
-	TotalProviders int     `json:"total_providers"`
+	TotalModels    []string `json:"total_models"`
+	TotalProviders int      `json:"total_providers"`
 }
 
 type ExtensionsResponse struct {
 	Extensions []struct {
-		Namespace          string `json:"namespace"`
-		Version            string `json:"version"`
-		Title              string `json:"title"`
-		Status             string `json:"status"`
-		Maintainer         string `json:"maintainer"`
-		SpecificationURI   string `json:"specification_uri"`
-		MinProtocolVersion string `json:"min_protocol_version"`
+		Namespace          string   `json:"namespace"`
+		Version            string   `json:"version"`
+		Title              string   `json:"title"`
+		Status             string   `json:"status"`
+		Maintainer         string   `json:"maintainer"`
+		SpecificationURI   string   `json:"specification_uri"`
+		MinProtocolVersion string   `json:"min_protocol_version"`
 		Tags               []string `json:"tags"`
-		HandlerClass       string `json:"handler_class"`
-		Handler            string `json:"handler"`
+		HandlerClass       string   `json:"handler_class"`
+		Handler            string   `json:"handler"`
 	} `json:"extensions"`
 }
 
@@ -103,11 +103,11 @@ type TraceItem struct {
 }
 
 type BudgetResponse struct {
-	ConsumedUSD  float64       `json:"consumed_usd"`
-	RemainingUSD float64       `json:"remaining_usd"`
-	TotalLimitUSD float64      `json:"total_limit_usd"`
-	Status       string        `json:"status"`
-	Transactions []Transaction `json:"transactions"`
+	ConsumedUSD   float64       `json:"consumed_usd"`
+	RemainingUSD  float64       `json:"remaining_usd"`
+	TotalLimitUSD float64       `json:"total_limit_usd"`
+	Status        string        `json:"status"`
+	Transactions  []Transaction `json:"transactions"`
 }
 
 type Transaction struct {
@@ -119,12 +119,12 @@ type Transaction struct {
 }
 
 type ProviderConfig struct {
-	Name           string `json:"name"`
-	BaseURL        string `json:"base_url"`
-	APIKey         string `json:"api_key"`
-	DefaultModel   string `json:"default_model"`
-	Models         []string `json:"models"`
-	IsDefault      bool   `json:"is_default"`
+	Name         string   `json:"name"`
+	BaseURL      string   `json:"base_url"`
+	APIKey       string   `json:"api_key"`
+	DefaultModel string   `json:"default_model"`
+	Models       []string `json:"models"`
+	IsDefault    bool     `json:"is_default"`
 }
 
 func (c *Client) GetMonitor() (*MonitorResponse, error) {

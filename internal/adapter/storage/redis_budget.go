@@ -58,7 +58,7 @@ func (s *RedisBudgetStore) Close() error {
 func (s *RedisBudgetStore) Reserve(ctx context.Context, sessionID string, amount float64) (bool, error) {
 	// 创建tracer
 	tracer := otel.Tracer("redis-budget")
-	
+
 	// 创建span
 	ctx, span := tracer.Start(ctx, "ReserveBudget")
 	defer span.End()
@@ -92,7 +92,7 @@ func (s *RedisBudgetStore) Reserve(ctx context.Context, sessionID string, amount
 func (s *RedisBudgetStore) Commit(ctx context.Context, sessionID string, amount float64) error {
 	// 创建tracer
 	tracer := otel.Tracer("redis-budget")
-	
+
 	// 创建span
 	ctx, span := tracer.Start(ctx, "CommitBudget")
 	defer span.End()
@@ -125,7 +125,7 @@ func (s *RedisBudgetStore) Commit(ctx context.Context, sessionID string, amount 
 func (s *RedisBudgetStore) Rollback(ctx context.Context, sessionID string, amount float64) error {
 	// 创建tracer
 	tracer := otel.Tracer("redis-budget")
-	
+
 	// 创建span
 	ctx, span := tracer.Start(ctx, "RollbackBudget")
 	defer span.End()
@@ -156,7 +156,7 @@ func (s *RedisBudgetStore) Rollback(ctx context.Context, sessionID string, amoun
 func (s *RedisBudgetStore) GetRemaining(ctx context.Context, sessionID string) (float64, error) {
 	// 创建tracer
 	tracer := otel.Tracer("redis-budget")
-	
+
 	// 创建span
 	ctx, span := tracer.Start(ctx, "GetRemainingBudget")
 	defer span.End()
@@ -200,7 +200,7 @@ func (s *RedisBudgetStore) GetRemaining(ctx context.Context, sessionID string) (
 func (s *RedisBudgetStore) SetBudget(ctx context.Context, sessionID string, amount float64) error {
 	// 创建tracer
 	tracer := otel.Tracer("redis-budget")
-	
+
 	// 创建span
 	ctx, span := tracer.Start(ctx, "SetBudget")
 	defer span.End()

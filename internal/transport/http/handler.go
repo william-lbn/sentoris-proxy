@@ -90,19 +90,19 @@ func (c *upstreamClient) Chat(ctx context.Context, req *upstream.ChatRequest) (*
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if req.Stream {
 		return c.parseStreamResponse(resp)
 	}
 
 	var llmResp struct {
-		ID      string    `json:"id"`
-		Object  string    `json:"object"`
-		Created int64     `json:"created"`
-		Model   string    `json:"model"`
+		ID      string `json:"id"`
+		Object  string `json:"object"`
+		Created int64  `json:"created"`
+		Model   string `json:"model"`
 		Choices []struct {
-			Message      struct {
+			Message struct {
 				Role    string `json:"role"`
 				Content string `json:"content"`
 			} `json:"message"`
@@ -190,14 +190,14 @@ func NewHandler(modelRouter *router.ModelRouter, signer *audit.Signer, constrain
 	return &Handler{
 		modelRouter:     modelRouter,
 		signer:          signer,
-		constraintEval: constraintEval,
-		differ:         diff.NewDiffer(),
-		traceStore:     traceStore,
-		budgetStore:    budgetStore,
-		apiKeyStore:    apiKeyStore,
+		constraintEval:  constraintEval,
+		differ:          diff.NewDiffer(),
+		traceStore:      traceStore,
+		budgetStore:     budgetStore,
+		apiKeyStore:     apiKeyStore,
 		riskReportStore: riskReportStore,
-		hookChain:      hooks.NewHookChain(""),
-		privacyService: governance.NewPrivacyService(),
+		hookChain:       hooks.NewHookChain(""),
+		privacyService:  governance.NewPrivacyService(),
 	}
 }
 
@@ -223,9 +223,8 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		path == "/v1/monitor/budget" ||
 		path == "/v1/monitor/risk-reports")
 
-	if !isMonitorPath && !(path == "/v1/replay-eval" && r.Method == "POST") &&
-		!strings.HasPrefix(path, "/v1/admin/") {
-	}
+	_ = isMonitorPath
+	_ = strings.HasPrefix(path, "/v1/admin/")
 
 	switch path {
 	case "/v1/chat/completions":
@@ -316,11 +315,11 @@ func (h *Handler) handleChatCompletions(w http.ResponseWriter, r *http.Request) 
 	}
 
 	trace := &domain.Trace{
-		TraceID:            traceID,
-		SessionID:         &sessionID,
-		Model:              modelToUse,
-		ExecutionState:    domain.StateInit,
-		CreatedAt:          time.Now(),
+		TraceID:        traceID,
+		SessionID:      &sessionID,
+		Model:          modelToUse,
+		ExecutionState: domain.StateInit,
+		CreatedAt:      time.Now(),
 		Input: domain.Input{
 			Prompt:   chatReq.Messages,
 			Params:   chatReq.Params,
@@ -340,9 +339,7 @@ func (h *Handler) handleChatCompletions(w http.ResponseWriter, r *http.Request) 
 
 	stateRecorder.RecordTransition(domain.StateInit, domain.StateConstraintEval)
 	trace.ExecutionState = domain.StateConstraintEval
-	if err := h.traceStore.Update(ctx, trace); err != nil {
-		logger.Error("Failed to update trace state to CONSTRAINT_EVAL", "error", err)
-	}
+	_ = h.traceStore.Update(ctx, trace)
 
 	constraints := sentorisHeaders.ToConstraints()
 	currentCostUSD := 0.0
@@ -363,7 +360,7 @@ func (h *Handler) handleChatCompletions(w http.ResponseWriter, r *http.Request) 
 			ChecksPassed: evaluationResult.ChecksPassed,
 		}
 		stateRecorder.ApplyToObservations(&trace.Observations)
-		h.traceStore.Update(ctx, trace)
+		_ = h.traceStore.Update(ctx, trace)
 
 		errCode := errors.ErrBudgetExceeded
 		if evaluationResult.Error != nil && evaluationResult.Error.Code == string(errors.ErrInvalidConstraint) {
@@ -393,9 +390,7 @@ func (h *Handler) handleChatCompletions(w http.ResponseWriter, r *http.Request) 
 
 	stateRecorder.RecordTransition(domain.StateConstraintEval, domain.StateExecuting)
 	trace.ExecutionState = domain.StateExecuting
-	if err := h.traceStore.Update(ctx, trace); err != nil {
-		logger.Error("Failed to update trace state to EXECUTING", "error", err)
-	}
+	_ = h.traceStore.Update(ctx, trace)
 
 	var providerConfig *router.ProviderConfig
 	providers := h.modelRouter.GetAllProviders()
@@ -428,7 +423,7 @@ func (h *Handler) handleChatCompletions(w http.ResponseWriter, r *http.Request) 
 			Message: "Model not found",
 		}
 		stateRecorder.ApplyToObservations(&trace.Observations)
-		h.traceStore.Update(ctx, trace)
+		_ = h.traceStore.Update(ctx, trace)
 		h.handleError(w, "Model not found", http.StatusNotFound, errors.ErrProviderNotFound)
 		return
 	}
@@ -470,7 +465,7 @@ func (h *Handler) handleChatCompletions(w http.ResponseWriter, r *http.Request) 
 						Message: "Budget limit exceeded",
 					}
 					stateRecorder.ApplyToObservations(&trace.Observations)
-					h.traceStore.Update(ctx, trace)
+					_ = h.traceStore.Update(ctx, trace)
 					h.handleError(w, "Budget limit exceeded", http.StatusTooManyRequests, errors.ErrBudgetExceeded)
 					return
 				}
@@ -503,7 +498,7 @@ func (h *Handler) handleChatCompletions(w http.ResponseWriter, r *http.Request) 
 			}
 		}
 
-		h.traceStore.Update(ctx, trace)
+		_ = h.traceStore.Update(ctx, trace)
 		h.setErrorResponseHeaders(w, traceID, errors.ErrUpstreamError)
 		h.handleErrorWithMessage(w, "Upstream request failed", http.StatusBadGateway, err)
 		return
@@ -587,7 +582,7 @@ func (h *Handler) handleChatCompletions(w http.ResponseWriter, r *http.Request) 
 		"usage": map[string]int{
 			"prompt_tokens":     resp.TokensUsed / 2,
 			"completion_tokens": resp.TokensUsed / 2,
-			"total_tokens":     resp.TokensUsed,
+			"total_tokens":      resp.TokensUsed,
 		},
 	}
 
@@ -609,9 +604,7 @@ func (h *Handler) handleChatCompletions(w http.ResponseWriter, r *http.Request) 
 		}
 	}
 
-	if err := h.traceStore.Update(ctx, trace); err != nil {
-		logger.Error("Failed to update trace", "error", err)
-	}
+	_ = h.traceStore.Update(ctx, trace)
 }
 
 func (h *Handler) handleVerifyTrace(w http.ResponseWriter, r *http.Request) {
@@ -692,9 +685,9 @@ func (h *Handler) handleModels(w http.ResponseWriter, r *http.Request) {
 
 	for name, config := range providers {
 		models = append(models, map[string]interface{}{
-			"id":      name,
-			"object":  "model",
-			"created": time.Now().Unix(),
+			"id":       name,
+			"object":   "model",
+			"created":  time.Now().Unix(),
 			"owned_by": name,
 		})
 		_ = config
@@ -739,7 +732,7 @@ func (h *Handler) handleMonitorMetrics(w http.ResponseWriter, r *http.Request) {
 			"FINALIZED": 0,
 			"FAILED":    0,
 		},
-		"by_model": map[string]int64{},
+		"by_model":   map[string]int64{},
 		"total_cost": 0.0,
 	}
 
@@ -784,7 +777,7 @@ func (h *Handler) handleMonitorMetrics(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"request_count": traceStats["total"],
-		"uptime": "0h",
+		"uptime":        "0h",
 		"trace": map[string]interface{}{
 			"stats": traceStats,
 		},
@@ -807,11 +800,11 @@ func (h *Handler) handleMonitorModels(w http.ResponseWriter, r *http.Request) {
 			for _, modelName := range config.Models {
 				isDefault := providerName == defaultProvider
 				modelsList = append(modelsList, map[string]interface{}{
-					"id":             modelName,
-					"provider":       providerName,
-					"is_default":     isDefault,
-					"input_price":    config.Pricing.InputPer1K,
-					"output_price":   config.Pricing.OutputPer1K,
+					"id":           modelName,
+					"provider":     providerName,
+					"is_default":   isDefault,
+					"input_price":  config.Pricing.InputPer1K,
+					"output_price": config.Pricing.OutputPer1K,
 				})
 			}
 		}
@@ -942,11 +935,11 @@ func (h *Handler) handleReplayEval(w http.ResponseWriter, r *http.Request) {
 	sentorisHeaders := ParseSentorisHeaders(r)
 
 	var req struct {
-		BaselineTraceID string   `json:"baseline_trace_id"`
-		Model           string   `json:"model,omitempty"`
-		FocusFields     []string `json:"focus_fields,omitempty"`
+		BaselineTraceID string         `json:"baseline_trace_id"`
+		Model           string         `json:"model,omitempty"`
+		FocusFields     []string       `json:"focus_fields,omitempty"`
 		Params          map[string]any `json:"params,omitempty"`
-		Reproducibility string `json:"reproducibility,omitempty"`
+		Reproducibility string         `json:"reproducibility,omitempty"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -1129,14 +1122,14 @@ func (h *Handler) handleAdminProviders(w http.ResponseWriter, r *http.Request) {
 		for name, config := range providers {
 			isDefault := name == defaultProvider
 			providerList = append(providerList, map[string]interface{}{
-				"name":              name,
-				"base_url":          config.BaseURL,
-				"auth_header":       config.AuthHeader,
-				"models":            config.Models,
+				"name":                name,
+				"base_url":            config.BaseURL,
+				"auth_header":         config.AuthHeader,
+				"models":              config.Models,
 				"input_price_per_1k":  config.Pricing.InputPer1K,
 				"output_price_per_1k": config.Pricing.OutputPer1K,
-				"is_default":        isDefault,
-				"status":            "active",
+				"is_default":          isDefault,
+				"status":              "active",
 			})
 		}
 
@@ -1147,13 +1140,13 @@ func (h *Handler) handleAdminProviders(w http.ResponseWriter, r *http.Request) {
 
 	case http.MethodPost:
 		var req struct {
-			Name              string   `json:"name"`
-			BaseURL           string   `json:"base_url"`
-			AuthHeader        string   `json:"auth_header"`
-			Models            []string `json:"models"`
-			InputPricePer1K   float64  `json:"input_price_per_1k"`
-			OutputPricePer1K  float64  `json:"output_price_per_1k"`
-			IsDefault         bool     `json:"is_default"`
+			Name             string   `json:"name"`
+			BaseURL          string   `json:"base_url"`
+			AuthHeader       string   `json:"auth_header"`
+			Models           []string `json:"models"`
+			InputPricePer1K  float64  `json:"input_price_per_1k"`
+			OutputPricePer1K float64  `json:"output_price_per_1k"`
+			IsDefault        bool     `json:"is_default"`
 		}
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -1188,13 +1181,13 @@ func (h *Handler) handleAdminProviders(w http.ResponseWriter, r *http.Request) {
 
 	case http.MethodPut:
 		var req struct {
-			Name              string   `json:"name"`
-			BaseURL           string   `json:"base_url,omitempty"`
-			AuthHeader        string   `json:"auth_header,omitempty"`
-			Models            []string `json:"models,omitempty"`
-			InputPricePer1K   float64  `json:"input_price_per_1k,omitempty"`
+			Name             string   `json:"name"`
+			BaseURL          string   `json:"base_url,omitempty"`
+			AuthHeader       string   `json:"auth_header,omitempty"`
+			Models           []string `json:"models,omitempty"`
+			InputPricePer1K  float64  `json:"input_price_per_1k,omitempty"`
 			OutputPricePer1K float64  `json:"output_price_per_1k,omitempty"`
-			IsDefault         bool     `json:"is_default"`
+			IsDefault        bool     `json:"is_default"`
 		}
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -1547,7 +1540,7 @@ func (h *Handler) handleErrorWithMessage(w http.ResponseWriter, message string, 
 func (h *Handler) handleSentorisError(w http.ResponseWriter, sentorisErr *errors.SentorisError) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(sentorisErr.HTTPStatusCode())
-	
+
 	// Use SentorisError's ToMap() method for standard format
 	json.NewEncoder(w).Encode(sentorisErr.ToMap())
 }
@@ -1593,9 +1586,9 @@ func (h *Handler) handleStreamingResponse(w http.ResponseWriter, trace *domain.T
 
 	// Send initial content chunk
 	streamData := map[string]interface{}{
-		"id":      trace.TraceID,
-		"object":  "chat.completion.chunk",
-		"model":   trace.Model,
+		"id":     trace.TraceID,
+		"object": "chat.completion.chunk",
+		"model":  trace.Model,
 		"choices": []map[string]interface{}{
 			{
 				"index": 0,
@@ -1613,13 +1606,13 @@ func (h *Handler) handleStreamingResponse(w http.ResponseWriter, trace *domain.T
 
 	// Send finish chunk
 	finishData := map[string]interface{}{
-		"id":      trace.TraceID,
-		"object":  "chat.completion.chunk",
-		"model":   trace.Model,
+		"id":     trace.TraceID,
+		"object": "chat.completion.chunk",
+		"model":  trace.Model,
 		"choices": []map[string]interface{}{
 			{
-				"index": 0,
-				"delta": map[string]interface{}{},
+				"index":         0,
+				"delta":         map[string]interface{}{},
 				"finish_reason": resp.FinishReason,
 			},
 		},

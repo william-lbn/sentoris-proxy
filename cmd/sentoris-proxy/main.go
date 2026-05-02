@@ -12,22 +12,22 @@ import (
 	"syscall"
 	"time"
 
-	httpHandler "github.com/sentoris-ai/sentoris-proxy/internal/transport/http"
-	"github.com/sentoris-ai/sentoris-proxy/internal/transport/http/middleware"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/sentoris-ai/sentoris-proxy/internal/adapter/storage"
+	"github.com/sentoris-ai/sentoris-proxy/internal/config"
 	"github.com/sentoris-ai/sentoris-proxy/internal/service/audit"
 	"github.com/sentoris-ai/sentoris-proxy/internal/service/deprecation"
-	"github.com/sentoris-ai/sentoris-proxy/internal/service/governance"
-	"github.com/sentoris-ai/sentoris-proxy/internal/service/security"
-	"github.com/sentoris-ai/sentoris-proxy/internal/service/hooks"
 	"github.com/sentoris-ai/sentoris-proxy/internal/service/extensions"
-	"github.com/sentoris-ai/sentoris-proxy/internal/config"
-	"github.com/sentoris-ai/sentoris-proxy/internal/adapter/storage"
+	"github.com/sentoris-ai/sentoris-proxy/internal/service/governance"
+	"github.com/sentoris-ai/sentoris-proxy/internal/service/hooks"
 	"github.com/sentoris-ai/sentoris-proxy/internal/service/router"
-	"github.com/sentoris-ai/sentoris-proxy/pkg/otel"
+	"github.com/sentoris-ai/sentoris-proxy/internal/service/security"
+	httpHandler "github.com/sentoris-ai/sentoris-proxy/internal/transport/http"
+	"github.com/sentoris-ai/sentoris-proxy/internal/transport/http/middleware"
 	"github.com/sentoris-ai/sentoris-proxy/pkg/logger"
 	"github.com/sentoris-ai/sentoris-proxy/pkg/metrics"
 	"github.com/sentoris-ai/sentoris-proxy/pkg/migrate"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/sentoris-ai/sentoris-proxy/pkg/otel"
 )
 
 var (
@@ -313,7 +313,7 @@ func main() {
 	})
 
 	listenPort := *port
-	if cfg != nil && cfg.Port > 0 {
+	if cfg.Port > 0 {
 		listenPort = cfg.Port
 	}
 

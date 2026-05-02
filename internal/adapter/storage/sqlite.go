@@ -43,6 +43,10 @@ func NewSQLiteStore(dbPath string) (*SQLiteStore, error) {
 	return &SQLiteStore{db: db}, nil
 }
 
+func (s *SQLiteStore) Close() error {
+	return s.db.Close()
+}
+
 func createTables(db *sql.DB) error {
 	queries := []string{
 		`CREATE TABLE IF NOT EXISTS traces (
@@ -195,7 +199,7 @@ func (s *SQLiteStore) ListTracesBySession(ctx context.Context, sessionID string)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	_ = rows.Close()
 
 	var traces []*domain.Trace
 	for rows.Next() {
@@ -251,7 +255,7 @@ func (s *SQLiteStore) ListRecentTraces(ctx context.Context, limit int) ([]*domai
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	_ = rows.Close()
 
 	var traces []*domain.Trace
 	for rows.Next() {
@@ -364,7 +368,7 @@ func (s *SQLiteStore) ListRiskReports(ctx context.Context, limit int) ([]*domain
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	_ = rows.Close()
 
 	var reports []*domain.RiskReport
 	for rows.Next() {
@@ -413,12 +417,12 @@ func (s *SQLiteStore) CreateAPIKey(ctx context.Context, keyHash, keyPrefix, name
 	}
 
 	return &APIKey{
-		KeyID:      keyID,
-		Name:       name,
-		KeyHash:    keyHash,
-		KeyPrefix:  keyPrefix,
-		ExpiresAt:  expiresAt,
-		IsActive:   true,
+		KeyID:       keyID,
+		Name:        name,
+		KeyHash:     keyHash,
+		KeyPrefix:   keyPrefix,
+		ExpiresAt:   expiresAt,
+		IsActive:    true,
 		Permissions: permissions,
 	}, nil
 }
@@ -495,7 +499,7 @@ func (s *SQLiteStore) ListAPIKeys(ctx context.Context) ([]*APIKey, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	_ = rows.Close()
 
 	var keys []*APIKey
 	for rows.Next() {
@@ -647,7 +651,7 @@ func (s *SQLiteStore) ListProviders(ctx context.Context) ([]*ProviderConfig, err
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	_ = rows.Close()
 
 	var providers []*ProviderConfig
 	for rows.Next() {
@@ -716,13 +720,13 @@ func (s *SQLiteStore) SetDefaultProvider(ctx context.Context, name string) error
 
 	_, err = tx.ExecContext(ctx, "UPDATE providers SET is_default = false")
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return err
 	}
 
 	_, err = tx.ExecContext(ctx, "UPDATE providers SET is_default = true WHERE name = ?", name)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return err
 	}
 
@@ -743,16 +747,16 @@ func (s *SQLiteStore) ReserveBudget(ctx context.Context, sessionID string, amoun
 		FROM budget_store WHERE session_id = ?`, sessionID).Scan(&totalBudget, &usedBudget, &reservedBudget)
 
 	if err == sql.ErrNoRows {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return false, fmt.Errorf("no budget found for session: %s", sessionID)
 	}
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return false, err
 	}
 
 	if usedBudget+reservedBudget+amount > totalBudget {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return false, nil
 	}
 
@@ -760,7 +764,7 @@ func (s *SQLiteStore) ReserveBudget(ctx context.Context, sessionID string, amoun
 		UPDATE budget_store SET reserved_budget = ?, updated_at = ? 
 		WHERE session_id = ?`, reservedBudget+amount, time.Now().Format(time.RFC3339), sessionID)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return false, err
 	}
 
@@ -777,12 +781,12 @@ func (s *SQLiteStore) CommitBudget(ctx context.Context, sessionID string, amount
 	err = tx.QueryRowContext(ctx, `
 		SELECT reserved_budget FROM budget_store WHERE session_id = ?`, sessionID).Scan(&reservedBudget)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return err
 	}
 
 	if reservedBudget < amount {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("insufficient reserved budget")
 	}
 
@@ -791,7 +795,7 @@ func (s *SQLiteStore) CommitBudget(ctx context.Context, sessionID string, amount
 		SET used_budget = used_budget + ?, reserved_budget = reserved_budget - ?, updated_at = ? 
 		WHERE session_id = ?`, amount, amount, time.Now().Format(time.RFC3339), sessionID)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return err
 	}
 
@@ -808,12 +812,12 @@ func (s *SQLiteStore) RollbackBudget(ctx context.Context, sessionID string, amou
 	err = tx.QueryRowContext(ctx, `
 		SELECT reserved_budget FROM budget_store WHERE session_id = ?`, sessionID).Scan(&reservedBudget)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return err
 	}
 
 	if reservedBudget < amount {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("insufficient reserved budget to rollback")
 	}
 
@@ -822,7 +826,7 @@ func (s *SQLiteStore) RollbackBudget(ctx context.Context, sessionID string, amou
 		SET reserved_budget = reserved_budget - ?, updated_at = ? 
 		WHERE session_id = ?`, amount, time.Now().Format(time.RFC3339), sessionID)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return err
 	}
 
@@ -932,7 +936,7 @@ func (s *SQLiteBudgetStore) Get(ctx context.Context) (*Budget, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	_ = rows.Close()
 
 	var total, used float64
 	if rows.Next() {

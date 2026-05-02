@@ -10,8 +10,8 @@ import (
 
 // CircuitBreakerClient 是一个带有熔断和重试机制的客户端包装器
 type CircuitBreakerClient struct {
-	client    LLMClient
-	breaker   *gobreaker.CircuitBreaker
+	client     LLMClient
+	breaker    *gobreaker.CircuitBreaker
 	maxRetries int
 	retryDelay time.Duration
 }

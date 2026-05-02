@@ -112,4 +112,3 @@ func (s *MemoryProviderStore) SetDefault(ctx context.Context, name string) error
 	config.IsDefault = true
 	return nil
 }
-

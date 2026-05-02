@@ -68,12 +68,12 @@ func (p *KeyPool) Next() (string, error) {
 
 // KeyManager 实现密钥管理
 type KeyManager struct {
-	privateKey    *rsa.PrivateKey
-	publicKey     *rsa.PublicKey
-	jwtSecret     []byte
-	apiKeys       []string
-	keyPools      map[string]*KeyPool
-	mutex         sync.RWMutex
+	privateKey *rsa.PrivateKey
+	publicKey  *rsa.PublicKey
+	jwtSecret  []byte
+	apiKeys    []string
+	keyPools   map[string]*KeyPool
+	mutex      sync.RWMutex
 }
 
 // NewKeyManager 创建一个新的密钥管理器

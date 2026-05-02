@@ -43,10 +43,10 @@ type ChatResponse struct {
 }
 
 type StreamEvent struct {
-	Content    string
-	Done       bool
-	Error      error
-	Usage      *Usage
+	Content string
+	Done    bool
+	Error   error
+	Usage   *Usage
 }
 
 type Usage struct {
@@ -77,9 +77,9 @@ func NewOpenAIClient(baseURL, apiKey, defaultModel string) *OpenAIClient {
 		model:     defaultModel,
 		tokenizer: tok,
 		pricing: map[string]ModelPricing{
-			"gpt-4o":      {InputPricePer1K: 0.005, OutputPricePer1K: 0.015},
-			"gpt-4o-mini": {InputPricePer1K: 0.00015, OutputPricePer1K: 0.0006},
-			"gpt-4-turbo": {InputPricePer1K: 0.01, OutputPricePer1K: 0.03},
+			"gpt-4o":        {InputPricePer1K: 0.005, OutputPricePer1K: 0.015},
+			"gpt-4o-mini":   {InputPricePer1K: 0.00015, OutputPricePer1K: 0.0006},
+			"gpt-4-turbo":   {InputPricePer1K: 0.01, OutputPricePer1K: 0.03},
 			"gpt-3.5-turbo": {InputPricePer1K: 0.0005, OutputPricePer1K: 0.0015},
 		},
 	}

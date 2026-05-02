@@ -13,42 +13,42 @@ import (
 type ExtensionHandler interface {
 	// Validate 解析并验证扩展参数
 	Validate(params json.RawMessage) error
-	
+
 	// OnConstraintEval 在约束评估阶段执行
 	OnConstraintEval(ctx context.Context, trace *domain.Trace, params json.RawMessage) error
-	
+
 	// OnExecuting 在执行阶段执行
 	OnExecuting(ctx context.Context, trace *domain.Trace, params json.RawMessage) error
-	
+
 	// Close 释放资源
 	Close() error
 }
 
 // MaintainerInfo 维护者信息
 type MaintainerInfo struct {
-	Name        string `json:"name"`
-	ContactURI  string `json:"contact_uri"`
-	GitHubOrg   string `json:"github_org,omitempty"`
+	Name       string `json:"name"`
+	ContactURI string `json:"contact_uri"`
+	GitHubOrg  string `json:"github_org,omitempty"`
 }
 
 // ExtensionRegistryEntry 扩展注册表条目，符合 schema/v1/extension-registry-schema.json
 type ExtensionRegistryEntry struct {
-	Namespace           string              `json:"namespace"`
-	Version             string              `json:"version"`
-	Title               string              `json:"title"`
-	Status              string              `json:"status"`
-	Maintainer          MaintainerInfo      `json:"maintainer"`
-	SpecificationURI    string              `json:"specification_uri"`
-	MinProtocolVersion  string              `json:"min_protocol_version,omitempty"`
-	Dependencies        []string            `json:"dependencies,omitempty"`
-	ConflictsWith       []string            `json:"conflicts_with,omitempty"`
-	CapabilitiesRequired []string           `json:"capabilities_required,omitempty"`
-	SchemaRef           string              `json:"schema_ref,omitempty"`
-	Tags                []string            `json:"tags,omitempty"`
-	CreatedAt           string              `json:"created_at,omitempty"`
-	UpdatedAt           string              `json:"updated_at,omitempty"`
-	HandlerClass        string              `json:"handler_class,omitempty"`
-	Handler             ExtensionHandler    `json:"-"`
+	Namespace            string           `json:"namespace"`
+	Version              string           `json:"version"`
+	Title                string           `json:"title"`
+	Status               string           `json:"status"`
+	Maintainer           MaintainerInfo   `json:"maintainer"`
+	SpecificationURI     string           `json:"specification_uri"`
+	MinProtocolVersion   string           `json:"min_protocol_version,omitempty"`
+	Dependencies         []string         `json:"dependencies,omitempty"`
+	ConflictsWith        []string         `json:"conflicts_with,omitempty"`
+	CapabilitiesRequired []string         `json:"capabilities_required,omitempty"`
+	SchemaRef            string           `json:"schema_ref,omitempty"`
+	Tags                 []string         `json:"tags,omitempty"`
+	CreatedAt            string           `json:"created_at,omitempty"`
+	UpdatedAt            string           `json:"updated_at,omitempty"`
+	HandlerClass         string           `json:"handler_class,omitempty"`
+	Handler              ExtensionHandler `json:"-"`
 }
 
 // IsValidNamespace 验证命名空间格式是否符合 sentoris.ai/v{major}/{feature} 格式
@@ -109,21 +109,21 @@ func (r *ExtensionRegistry) Register(entry *ExtensionRegistryEntry) error {
 	if err := entry.Validate(); err != nil {
 		return fmt.Errorf("validation failed: %w", err)
 	}
-	
+
 	// 检查冲突
 	for _, conflict := range entry.ConflictsWith {
 		if _, exists := r.entries[conflict]; exists {
 			return fmt.Errorf("extension %s conflicts with already registered extension %s", entry.Namespace, conflict)
 		}
 	}
-	
+
 	// 检查依赖
 	for _, dep := range entry.Dependencies {
 		if _, exists := r.entries[dep]; !exists {
 			return fmt.Errorf("extension %s requires %s which is not registered", entry.Namespace, dep)
 		}
 	}
-	
+
 	r.entries[entry.Namespace] = entry
 	return nil
 }
@@ -148,7 +148,7 @@ func (r *ExtensionRegistry) Remove(namespace string) error {
 	if _, ok := r.entries[namespace]; !ok {
 		return fmt.Errorf("extension %s not found", namespace)
 	}
-	
+
 	// 检查是否有其他扩展依赖此扩展
 	for _, entry := range r.entries {
 		for _, dep := range entry.Dependencies {
@@ -157,7 +157,7 @@ func (r *ExtensionRegistry) Remove(namespace string) error {
 			}
 		}
 	}
-	
+
 	delete(r.entries, namespace)
 	return nil
 }
@@ -195,13 +195,13 @@ func (r *ExtensionRegistry) LoadFromConfig(configData []byte) error {
 	if err := json.Unmarshal(configData, &entries); err != nil {
 		return fmt.Errorf("failed to unmarshal extension registry config: %w", err)
 	}
-	
+
 	for _, entry := range entries {
 		if err := r.Register(entry); err != nil {
 			return fmt.Errorf("failed to register extension %s: %w", entry.Namespace, err)
 		}
 	}
-	
+
 	return nil
 }
 
@@ -209,7 +209,7 @@ func (r *ExtensionRegistry) LoadFromConfig(configData []byte) error {
 func (r *ExtensionRegistry) GetCapabilities() []string {
 	capabilities := make([]string, 0)
 	seen := make(map[string]bool)
-	
+
 	for _, entry := range r.entries {
 		for _, cap := range entry.CapabilitiesRequired {
 			if !seen[cap] {
@@ -218,7 +218,7 @@ func (r *ExtensionRegistry) GetCapabilities() []string {
 			}
 		}
 	}
-	
+
 	return capabilities
 }
 
@@ -254,10 +254,10 @@ func (r *ExtensionRegistry) GetCompatibleExtensions(protocolVersion string) []*E
 // compareVersions 比较两个版本字符串
 func compareVersions(v1, v2 string) int {
 	var major1, minor1, patch1, major2, minor2, patch2 int
-	
-	fmt.Sscanf(v1, "%d.%d.%d", &major1, &minor1, &patch1)
-	fmt.Sscanf(v2, "%d.%d.%d", &major2, &minor2, &patch2)
-	
+
+	_, _ = fmt.Sscanf(v1, "%d.%d.%d", &major1, &minor1, &patch1)
+	_, _ = fmt.Sscanf(v2, "%d.%d.%d", &major2, &minor2, &patch2)
+
 	if major1 != major2 {
 		return major1 - major2
 	}
