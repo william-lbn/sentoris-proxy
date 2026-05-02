@@ -1,0 +1,26 @@
+# Binary files
+sentoris-proxy
+sentoris-ui
+*.exe
+
+# SQLite databases
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Test coverage
+coverage.out
+
+# Build artifacts
+dist/
+build/
